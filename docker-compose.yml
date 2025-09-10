@@ -1,0 +1,31 @@
+version: '3.8'
+
+services:
+  # Servicio para el microservicio de películas
+  peliculas-app:
+    build: .  # Utiliza el Dockerfile en el directorio actual
+    container_name: peliculas-app-container
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://peliculas-db:5432/peliculas_db
+      SPRING_DATASOURCE_USERNAME: user_peliculas
+      SPRING_DATASOURCE_PASSWORD: pass_peliculas
+    depends_on:
+      - peliculas-db
+
+  # Servicio para la base de datos de películas
+  peliculas-db:
+    image: postgres:13-alpine
+    container_name: peliculas-db-container
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: peliculas_db
+      POSTGRES_USER: user_peliculas
+      POSTGRES_PASSWORD: pass_peliculas
+    volumes:
+      - peliculas-data:/var/lib/postgresql/data
+
+volumes:
+  peliculas-data:
