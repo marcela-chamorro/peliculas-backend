@@ -1,10 +1,9 @@
 package com.unrn.peliculas.controller;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
 
 import com.unrn.peliculas.dto.PeliculaDTO;
 import com.unrn.peliculas.service.PeliculaService;
@@ -25,5 +24,10 @@ public class PeliculaController {
             @PathVariable Integer id,
             @RequestBody PeliculaDTO dto) {
         return peliculaService.editarPelicula(id, dto);
+    }
+
+    @GetMapping
+    public PeliculaDTO obtenerDetallePelicula(@PathVariable Integer id) {
+        return peliculaService.obtenerDetallePelicula(id);
     }
 }

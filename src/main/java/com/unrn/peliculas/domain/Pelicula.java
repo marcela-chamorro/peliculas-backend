@@ -1,4 +1,4 @@
-package com.unrn.peliculas.model;
+package com.unrn.peliculas.domain;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -10,20 +10,37 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import lombok.Getter;
+import lombok.Setter;
 
 @Entity
+@Getter
+@Setter
 @Table(name = "peliculas")
 public class Pelicula {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer peliculaId;
 
+    @Column(name = "titulo")
     private String titulo;
+
+    @Column(name = "fecha_salida")
     private LocalDate fechaSalida;
+
+    @Column(name = "precio")
     private BigDecimal precio;
+
+    @Column(name = "condicion")
     private String condicion; // Nuevo o Usado
+
+    @Column(name = "formato")
     private String formato; // DVD, BluRay
+
+    @Column(name = "sinopsis", length = 2000)
     private String sinopsis;
+
+    @Column(name = "imagen_ampliada", length = 2000)
     private String imagenAmpliada;
 
     @Column(name = "last_update")

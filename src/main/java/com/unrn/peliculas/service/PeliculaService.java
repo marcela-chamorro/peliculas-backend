@@ -5,7 +5,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
 import com.unrn.peliculas.dto.PeliculaDTO;
-import com.unrn.peliculas.model.Pelicula;
+import com.unrn.peliculas.domain.Pelicula;
 import com.unrn.peliculas.repository.PeliculaRepository;
 
 @Service
@@ -47,6 +47,13 @@ public class PeliculaService {
         peliculaRepo.save(p);
         return dto;
 
+    }
+
+    public PeliculaDTO obtenerDetallePelicula(Integer id) {
+        Pelicula p = peliculaRepo.findById(id)
+                .orElseThrow(() -> new RuntimeException("Película no encontrada"));
+        return new PeliculaDTO(p.getPeliculaId(), p.getTitulo(), p.getFechaSalida(), p.getPrecio(), p.getCondicion(),
+                p.getFormato(), p.getSinopsis(), p.getImagenAmpliada());
     }
 
 }
