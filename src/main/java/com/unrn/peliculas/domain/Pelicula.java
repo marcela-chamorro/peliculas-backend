@@ -1,120 +1,69 @@
 package com.unrn.peliculas.domain;
 
+import jakarta.persistence.*;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
-import lombok.Getter;
-import lombok.Setter;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
-@Getter
-@Setter
+@Data
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @Table(name = "peliculas")
 public class Pelicula {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer peliculaId;
 
-    @Column(name = "titulo")
+    @Column(nullable = false, length = 255)
     private String titulo;
 
-    @Column(name = "fecha_salida")
+    @Column(nullable = false)
     private LocalDate fechaSalida;
 
-    @Column(name = "precio")
+    @Column(nullable = false, precision = 10, scale = 2)
     private BigDecimal precio;
 
-    @Column(name = "condicion")
-    private String condicion; // Nuevo o Usado
+    @Column(nullable = false, length = 50)
+    private String condicion;
 
-    @Column(name = "formato")
-    private String formato; // DVD, BluRay
+    @Column(nullable = false, length = 50)
+    private String formato;
 
-    @Column(name = "sinopsis", length = 2000)
+    @Column(columnDefinition = "TEXT")
     private String sinopsis;
 
-    @Column(name = "imagen_ampliada", length = 2000)
+    @Column(length = 255)
     private String imagenAmpliada;
 
-    @Column(name = "last_update")
-    private LocalDateTime lastUpdate;
+    @Column(nullable = false)
+    private LocalDateTime lastUpdate = LocalDateTime.now();
 
-    public Integer getPeliculaId() {
-        return peliculaId;
-    }
+    @ManyToMany
+    @JoinTable(
+            name = "pelicula_directores",
+            joinColumns = @JoinColumn(name = "pelicula_id"),
+            inverseJoinColumns = @JoinColumn(name = "director_id")
+    )
+    private Set<Director> directores = new HashSet<>();
 
-    public void setPeliculaId(Integer peliculaId) {
-        this.peliculaId = peliculaId;
-    }
+    @ManyToMany
+    @JoinTable(
+            name = "pelicula_actores",
+            joinColumns = @JoinColumn(name = "pelicula_id"),
+            inverseJoinColumns = @JoinColumn(name = "actor_id")
+    )
+    private Set<Actor> actores = new HashSet<>();
 
-    public String getTitulo() {
-        return titulo;
-    }
-
-    public void setTitulo(String titulo) {
-        this.titulo = titulo;
-    }
-
-    public LocalDate getFechaSalida() {
-        return fechaSalida;
-    }
-
-    public void setFechaSalida(LocalDate fechaSalida) {
-        this.fechaSalida = fechaSalida;
-    }
-
-    public BigDecimal getPrecio() {
-        return precio;
-    }
-
-    public void setPrecio(BigDecimal precio) {
-        this.precio = precio;
-    }
-
-    public String getCondicion() {
-        return condicion;
-    }
-
-    public void setCondicion(String condicion) {
-        this.condicion = condicion;
-    }
-
-    public String getFormato() {
-        return formato;
-    }
-
-    public void setFormato(String formato) {
-        this.formato = formato;
-    }
-
-    public String getSinopsis() {
-        return sinopsis;
-    }
-
-    public void setSinopsis(String sinopsis) {
-        this.sinopsis = sinopsis;
-    }
-
-    public String getImagenAmpliada() {
-        return imagenAmpliada;
-    }
-
-    public void setImagenAmpliada(String imagenAmpliada) {
-        this.imagenAmpliada = imagenAmpliada;
-    }
-
-    public LocalDateTime getLastUpdate() {
-        return lastUpdate;
-    }
-
-    public void setLastUpdate(LocalDateTime lastUpdate) {
-        this.lastUpdate = lastUpdate;
-    }
+    @ManyToMany
+    @JoinTable(
+            name = "pelicula_generos",
+            joinColumns = @JoinColumn(name = "pelicula_id"),
+            inverseJoinColumns = @JoinColumn(name = "genero_id")
+    )
+    private Set<Genero> generos = new HashSet<>();
 }
