@@ -1,10 +1,7 @@
 package com.unrn.peliculas.dto;
 
-import lombok.Data;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.AllArgsConstructor;
+import lombok.*;
+
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
@@ -12,21 +9,10 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Getter
-@Setter
+@Builder
 public class PeliculaDTO {
 
-    public PeliculaDTO(Integer peliculaId, String titulo, LocalDate fechaSalida, BigDecimal precio,
-                       String condicion, String formato, String sinopsis, String imagenAmpliada) {
-        this.titulo = titulo;
-        this.fechaSalida = fechaSalida;
-        this.precio = precio;
-        this.condicion = condicion;
-        this.formato = formato;
-        this.sinopsis = sinopsis;
-        this.imagenAmpliada = imagenAmpliada;
-    }
-
+    private Integer peliculaId;
     private String titulo;
     private LocalDate fechaSalida;
     private BigDecimal precio;

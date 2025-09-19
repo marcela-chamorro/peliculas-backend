@@ -50,7 +50,16 @@ public class PeliculaService {
     public PeliculaDTO obtenerDetallePelicula(Integer id) {
         Pelicula p = peliculaRepo.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Película no encontrada"));
-        return new PeliculaDTO(p.getPeliculaId(), p.getTitulo(), p.getFechaSalida(), p.getPrecio(),
-                p.getCondicion(), p.getFormato(), p.getSinopsis(), p.getImagenAmpliada());
+        return PeliculaDTO.builder()
+                .peliculaId(p.getPeliculaId())
+                .titulo(p.getTitulo())
+                .fechaSalida(p.getFechaSalida())
+                .precio(p.getPrecio())
+                .condicion(p.getCondicion())
+                .formato(p.getFormato())
+                .sinopsis(p.getSinopsis())
+                .imagenAmpliada(p.getImagenAmpliada())
+                .build();
+
     }
 }
