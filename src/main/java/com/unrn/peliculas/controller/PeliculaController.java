@@ -26,7 +26,7 @@ public class PeliculaController {
         return peliculaService.editarPelicula(id, dto);
     }
 
-    @GetMapping
+    @GetMapping("/{id}")
     public PeliculaDTO obtenerDetallePelicula(@PathVariable Integer id) {
         return peliculaService.obtenerDetallePelicula(id);
     }
