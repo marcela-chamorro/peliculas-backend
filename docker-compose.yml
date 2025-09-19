@@ -1,9 +1,8 @@
 version: '3.8'
 
 services:
-  # Servicio para el microservicio de películas
   peliculas-app:
-    build: .  # Utiliza el Dockerfile en el directorio actual
+    build: .
     container_name: peliculas-app-container
     ports:
       - "8080:8080"
@@ -14,7 +13,6 @@ services:
     depends_on:
       - peliculas-db
 
-  # Servicio para la base de datos de películas
   peliculas-db:
     image: postgres:13-alpine
     container_name: peliculas-db-container
