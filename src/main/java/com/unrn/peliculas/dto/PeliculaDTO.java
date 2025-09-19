@@ -16,8 +16,15 @@ import java.util.List;
 @Setter
 public class PeliculaDTO {
 
-    public PeliculaDTO(Integer peliculaId, String titulo2, LocalDate fechaSalida2, BigDecimal precio2,
-            String condicion2, String formato2, String sinopsis2, String imagenAmpliada2) {
+    public PeliculaDTO(Integer peliculaId, String titulo, LocalDate fechaSalida, BigDecimal precio,
+                       String condicion, String formato, String sinopsis, String imagenAmpliada) {
+        this.titulo = titulo;
+        this.fechaSalida = fechaSalida;
+        this.precio = precio;
+        this.condicion = condicion;
+        this.formato = formato;
+        this.sinopsis = sinopsis;
+        this.imagenAmpliada = imagenAmpliada;
     }
 
     private String titulo;

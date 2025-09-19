@@ -1,23 +1,21 @@
 package com.unrn.peliculas.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
 import com.unrn.peliculas.dto.PeliculaDTO;
 import com.unrn.peliculas.domain.Pelicula;
 import com.unrn.peliculas.repository.PeliculaRepository;
+import org.springframework.web.server.ResponseStatusException;
 
 @Service
 @Validated
 public class PeliculaService {
 
     @Autowired
-    private final PeliculaRepository peliculaRepo;
-
-    public PeliculaService(PeliculaRepository peliculaRepo) {
-        this.peliculaRepo = peliculaRepo;
-    }
+    private PeliculaRepository peliculaRepo;
 
     public PeliculaDTO crearPelicula(PeliculaDTO dto) {
 
@@ -51,9 +49,8 @@ public class PeliculaService {
 
     public PeliculaDTO obtenerDetallePelicula(Integer id) {
         Pelicula p = peliculaRepo.findById(id)
-                .orElseThrow(() -> new RuntimeException("Película no encontrada"));
-        return new PeliculaDTO(p.getPeliculaId(), p.getTitulo(), p.getFechaSalida(), p.getPrecio(), p.getCondicion(),
-                p.getFormato(), p.getSinopsis(), p.getImagenAmpliada());
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Película no encontrada"));
+        return new PeliculaDTO(p.getPeliculaId(), p.getTitulo(), p.getFechaSalida(), p.getPrecio(),
+                p.getCondicion(), p.getFormato(), p.getSinopsis(), p.getImagenAmpliada());
     }
-
 }
