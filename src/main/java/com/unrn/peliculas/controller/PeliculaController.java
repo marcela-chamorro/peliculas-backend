@@ -1,6 +1,7 @@
 package com.unrn.peliculas.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import com.unrn.peliculas.dto.PeliculaDTO;
@@ -9,15 +10,18 @@ import com.unrn.peliculas.service.PeliculaService;
 @RestController
 @RequestMapping("/api/peliculas")
 public class PeliculaController {
+
     @Autowired
     PeliculaService peliculaService;
 
     @PostMapping
+    @PreAuthorize("hasRole('admin')")
     public PeliculaDTO crear(@RequestBody PeliculaDTO dto) {
         return peliculaService.crearPelicula(dto);
     }
 
     @PutMapping("/{id}")
+    @PreAuthorize("hasRole('admin')")
     public PeliculaDTO editar(
             @PathVariable Integer id,
             @RequestBody PeliculaDTO dto) {
@@ -25,6 +29,7 @@ public class PeliculaController {
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasAnyRole('admin', 'cliente')")
     public PeliculaDTO obtenerDetallePelicula(@PathVariable Integer id) {
         return peliculaService.obtenerDetallePelicula(id);
     }
