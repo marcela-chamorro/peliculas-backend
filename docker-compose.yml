@@ -10,8 +10,11 @@ services:
       SPRING_DATASOURCE_URL: jdbc:postgresql://peliculas-db:5432/peliculas_db
       SPRING_DATASOURCE_USERNAME: user_peliculas
       SPRING_DATASOURCE_PASSWORD: pass_peliculas
-    depends_on:
-      - peliculas-db
+      SPRING_RABBITMQ_HOST: rabbitmq
+      SPRING_RABBITMQ_USERNAME: app
+      SPRING_RABBITMQ_PASSWORD: app
+    depends_on: [peliculas-db, rabbitmq]
+   
 
   peliculas-db:
     image: postgres:13-alpine
