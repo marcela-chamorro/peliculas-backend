@@ -5,11 +5,11 @@ services:
     ports:
       - "8080:8080"
     environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://peliculas-db:5432/peliculas_db
-      SPRING_DATASOURCE_USERNAME: user_peliculas
-      SPRING_DATASOURCE_PASSWORD: pass_peliculas
-      SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI: http://keycloak:8080/realms/cinecloud
-      SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_JWK_SET_URI: http://keycloak:8080/realms/cinecloud/protocol/openid-connect/certs
+      # Para validación (la URL pública que está en el token)
+      KEYCLOAK_ISSUER_URI: http://localhost:9090/realms/cinecloud
+      # Para conectividad (la URL interna que el contenedor puede alcanzar)
+      KEYCLOAK_JWKS_URI: http://keycloak:8080/realms/cinecloud/protocol/openid-connect/certs
+      DATASOURCE_URL: jdbc:postgresql://peliculas-db:5432/peliculas_db
     depends_on:
       - peliculas-db
       - keycloak

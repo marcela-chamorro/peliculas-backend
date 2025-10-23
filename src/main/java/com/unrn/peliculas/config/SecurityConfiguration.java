@@ -8,8 +8,6 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
 import org.springframework.security.web.SecurityFilterChain;
@@ -18,10 +16,7 @@ import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 @Configuration
 @EnableWebSecurity
@@ -39,7 +34,6 @@ public class SecurityConfiguration {
                 )
 
                 .authorizeHttpRequests(authz -> authz
-                        // Endpoints públicos
                         .requestMatchers(
                                 "/api/public/**",
                                 "/swagger-ui/**",
@@ -48,19 +42,15 @@ public class SecurityConfiguration {
                                 "/v3/api-docs/**",
                                 "/webjars/**"
                         ).permitAll()
-
-                        // Endpoints de catálogo - accesibles para clientes y admin
                         .requestMatchers("/api/catalogos/**").hasAnyRole("cliente", "admin")
-
-                        // Endpoints de administración - solo admin
                         .requestMatchers("/api/peliculas/**").hasRole("admin")
-
                         .anyRequest().authenticated()
                 )
 
                 .oauth2ResourceServer(oauth2 -> oauth2
                         .jwt(jwt -> jwt
-                                .jwtAuthenticationConverter(jwtAuthenticationConverter())
+                                        .jwtAuthenticationConverter(jwtAuthenticationConverter())
+                                // ¡Línea eliminada! Spring Boot lo autoconfigurará.
                         )
                 );
 
