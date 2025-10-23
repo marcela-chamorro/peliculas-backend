@@ -16,9 +16,10 @@ public class CatalogoController {
     @Autowired
     private CatalogoService catalogoService;
 
-    @GetMapping("/ping")
-    public ResponseEntity<String> ping() {
-        return ResponseEntity.ok("pong");
+    // Crear un nuevo catálogo
+    @PostMapping("/crear-catalogo/")
+    public CatalogoDTO crearCatalogo(@RequestBody CatalogoDTO dto) {
+        return catalogoService.crear(dto);
     }
 
     // Ver todos los catálogos
