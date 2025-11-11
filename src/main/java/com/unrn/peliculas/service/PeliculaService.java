@@ -5,10 +5,12 @@ import com.unrn.peliculas.domain.Director;
 import com.unrn.peliculas.domain.Genero;
 import com.unrn.peliculas.domain.Pelicula;
 import com.unrn.peliculas.dto.PeliculaDTO;
-import com.unrn.peliculas.repository.PeliculaRepository;
 import com.unrn.peliculas.repository.ActorRepository;
 import com.unrn.peliculas.repository.DirectorRepository;
 import com.unrn.peliculas.repository.GeneroRepository;
+import com.unrn.peliculas.repository.PeliculaRepository;
+import com.unrn.peliculas.config.RabbitMQConfig;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -34,14 +36,30 @@ public class PeliculaService {
     @Autowired
     private GeneroRepository generoRepo;
 
-    // Crear
+    @Autowired
+    private RabbitTemplate rabbitTemplate; // 🔹 Para enviar mensajes a RabbitMQ
+
+    private static final String ROUTING_KEY = "pelicula.evento";
+
+    // =======================
+    // Crear película (Publica mensaje)
+    // =======================
     public PeliculaDTO crearPelicula(PeliculaDTO dto) {
         Pelicula p = toEntity(dto);
         peliculaRepo.save(p);
-        return toDTO(p);
+
+        PeliculaDTO peliculaCreada = toDTO(p);
+
+        // 🔹 Enviar mensaje a RabbitMQ cuando se crea la película
+        rabbitTemplate.convertAndSend(RabbitMQConfig.EXCHANGE_NAME, ROUTING_KEY, peliculaCreada);
+        System.out.println("📤 Enviado mensaje RabbitMQ: Nueva película creada -> " + peliculaCreada.getTitulo());
+
+        return peliculaCreada;
     }
 
-    // Editar
+    // =======================
+    // Editar película (Publica mensaje)
+    // =======================
     public PeliculaDTO editarPelicula(Integer id, PeliculaDTO dto) {
         Pelicula p = peliculaRepo.findById(id)
                 .orElseThrow(() -> new RuntimeException("Película no encontrada"));
@@ -56,32 +74,40 @@ public class PeliculaService {
         p.setImagenAmpliada(dto.getImagenAmpliada());
 
         // actualizar relaciones
-        if(dto.getActoresIds() != null) {
-            p.setActores((Set<Actor>) dto.getActoresIds().stream()
+        if (dto.getActoresIds() != null) {
+            p.setActores(dto.getActoresIds().stream()
                     .map(idActor -> actorRepo.findById(idActor)
                             .orElseThrow(() -> new RuntimeException("Actor no encontrado: " + idActor)))
-                    .toList());
+                    .collect(Collectors.toSet()));
         }
 
-        if(dto.getDirectoresIds() != null) {
-            p.setDirectores((Set<Director>) dto.getDirectoresIds().stream()
+        if (dto.getDirectoresIds() != null) {
+            p.setDirectores(dto.getDirectoresIds().stream()
                     .map(idDirector -> directorRepo.findById(idDirector)
                             .orElseThrow(() -> new RuntimeException("Director no encontrado: " + idDirector)))
-                    .toList());
+                    .collect(Collectors.toSet()));
         }
 
-        if(dto.getGenerosIds() != null) {
-            p.setGeneros((Set<Genero>) dto.getGenerosIds().stream()
+        if (dto.getGenerosIds() != null) {
+            p.setGeneros(dto.getGenerosIds().stream()
                     .map(idGenero -> generoRepo.findById(idGenero)
                             .orElseThrow(() -> new RuntimeException("Género no encontrado: " + idGenero)))
-                    .toList());
+                    .collect(Collectors.toSet()));
         }
 
         peliculaRepo.save(p);
-        return toDTO(p);
+        PeliculaDTO peliculaEditada = toDTO(p);
+
+        // 🔹 Enviar mensaje a RabbitMQ cuando se edita la película
+        rabbitTemplate.convertAndSend(RabbitMQConfig.EXCHANGE_NAME, ROUTING_KEY, peliculaEditada);
+        System.out.println("📤 Enviado mensaje RabbitMQ: Película editada -> " + peliculaEditada.getTitulo());
+
+        return peliculaEditada;
     }
 
-    // Obtener detalle
+    // =======================
+    // Obtener detalle película
+    // =======================
     public PeliculaDTO obtenerDetallePelicula(Integer id) {
         Pelicula p = peliculaRepo.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Película no encontrada"));
@@ -101,10 +127,9 @@ public class PeliculaService {
                 .formato(p.getFormato())
                 .sinopsis(p.getSinopsis())
                 .imagenAmpliada(p.getImagenAmpliada())
-                // Devolver nombres para detalle
-                .actores(p.getActores().stream().map(a -> a.getNombre()).toList())
-                .directores(p.getDirectores().stream().map(d -> d.getNombre()).toList())
-                .generos(p.getGeneros().stream().map(g -> g.getNombre()).toList())
+                .actores(p.getActores().stream().map(Actor::getNombre).toList())
+                .directores(p.getDirectores().stream().map(Director::getNombre).toList())
+                .generos(p.getGeneros().stream().map(Genero::getNombre).toList())
                 .build();
     }
 
@@ -118,22 +143,21 @@ public class PeliculaService {
         p.setSinopsis(dto.getSinopsis());
         p.setImagenAmpliada(dto.getImagenAmpliada());
 
-        // Mapear relaciones solo si vienen los IDs
-        if(dto.getActoresIds() != null) {
+        if (dto.getActoresIds() != null) {
             p.setActores(dto.getActoresIds().stream()
                     .map(id -> actorRepo.findById(id)
                             .orElseThrow(() -> new RuntimeException("Actor no encontrado: " + id)))
                     .collect(Collectors.toSet()));
         }
 
-        if(dto.getDirectoresIds() != null) {
+        if (dto.getDirectoresIds() != null) {
             p.setDirectores(dto.getDirectoresIds().stream()
                     .map(id -> directorRepo.findById(id)
                             .orElseThrow(() -> new RuntimeException("Director no encontrado: " + id)))
                     .collect(Collectors.toSet()));
         }
 
-        if(dto.getGenerosIds() != null) {
+        if (dto.getGenerosIds() != null) {
             p.setGeneros(dto.getGenerosIds().stream()
                     .map(id -> generoRepo.findById(id)
                             .orElseThrow(() -> new RuntimeException("Género no encontrado: " + id)))
