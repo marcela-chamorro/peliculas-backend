@@ -25,17 +25,16 @@ services:
       SPRING_DATASOURCE_USERNAME: user_peliculas
       SPRING_DATASOURCE_PASSWORD: pass_peliculas
 
-      # Configuración RabbitMQ
-      SPRING_RABBITMQ_HOST: rabbitmq
+      # Configuración RabbitMQ → usar el RabbitMQ del CARRITO
+      SPRING_RABBITMQ_HOST: host.docker.internal   # 🔥 RabbitMQ del host (Carrito)
       SPRING_RABBITMQ_PORT: 5672
       SPRING_RABBITMQ_USERNAME: guest
       SPRING_RABBITMQ_PASSWORD: guest
 
-      # Nombre del exchange que se usará
+      # Exchange a utilizar
       APP_RABBITMQ_EXCHANGE: peliculas.exchange
     depends_on:
       - peliculas-db
-      - rabbitmq
 
   peliculas-db:
     image: postgres:13-alpine
@@ -49,18 +48,5 @@ services:
     volumes:
       - peliculas-data:/var/lib/postgresql/data
 
-  rabbitmq:
-    image: rabbitmq:3-management
-    container_name: rabbitmq-container
-    ports:
-      - "5672:5672"   # puerto de conexión
-      - "15672:15672" # interfaz web de RabbitMQ
-    environment:
-      RABBITMQ_DEFAULT_USER: guest
-      RABBITMQ_DEFAULT_PASS: guest
-    volumes:
-      - rabbitmq_data:/var/lib/rabbitmq
-
 volumes:
   peliculas-data:
-  rabbitmq_data:
