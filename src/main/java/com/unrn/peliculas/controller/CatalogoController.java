@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/catalogos")
+@RequestMapping("/catalogos")
 public class CatalogoController {
 
     @Autowired
@@ -24,7 +24,6 @@ public class CatalogoController {
 
     // Ver todos los catálogos
     @GetMapping
-    @PreAuthorize("hasAnyRole('admin', 'cliente')")
     public List<CatalogoDTO> listarCatalogos() {
         return catalogoService.listar();
     }

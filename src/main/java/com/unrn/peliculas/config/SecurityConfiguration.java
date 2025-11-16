@@ -35,22 +35,20 @@ public class SecurityConfiguration {
 
                 .authorizeHttpRequests(authz -> authz
                         .requestMatchers(
-                                "/api/public/**",
+                                "/public/**",
+                                "/catalogos",
                                 "/swagger-ui/**",
                                 "/swagger-ui.html",
                                 "/api-docs/**",
                                 "/v3/api-docs/**",
                                 "/webjars/**"
                         ).permitAll()
-                        .requestMatchers("/api/catalogos/**").hasAnyRole("cliente", "admin")
-                        .requestMatchers("/api/peliculas/**").hasRole("admin")
                         .anyRequest().authenticated()
                 )
 
                 .oauth2ResourceServer(oauth2 -> oauth2
                         .jwt(jwt -> jwt
                                         .jwtAuthenticationConverter(jwtAuthenticationConverter())
-                                // ¡Línea eliminada! Spring Boot lo autoconfigurará.
                         )
                 );
 
