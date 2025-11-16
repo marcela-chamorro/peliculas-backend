@@ -63,48 +63,56 @@ public class PeliculaService {
     public PeliculaDTO editarPelicula(Integer id, PeliculaDTO dto) {
         Pelicula p = peliculaRepo.findById(id)
                 .orElseThrow(() -> new RuntimeException("Película no encontrada"));
-
-        // actualizar datos básicos
-        p.setTitulo(dto.getTitulo());
-        p.setFechaSalida(dto.getFechaSalida());
-        p.setPrecio(dto.getPrecio());
-        p.setCondicion(dto.getCondicion());
-        p.setFormato(dto.getFormato());
-        p.setSinopsis(dto.getSinopsis());
-        p.setImagenAmpliada(dto.getImagenAmpliada());
-
-        // actualizar relaciones
+    
+        // 🔧 SOLO actualizar si el campo viene en el JSON
+        if (dto.getTitulo() != null) p.setTitulo(dto.getTitulo());
+        if (dto.getFechaSalida() != null) p.setFechaSalida(dto.getFechaSalida());
+        if (dto.getPrecio() != null) p.setPrecio(dto.getPrecio());
+        if (dto.getCondicion() != null) p.setCondicion(dto.getCondicion());
+        if (dto.getFormato() != null) p.setFormato(dto.getFormato());
+        if (dto.getSinopsis() != null) p.setSinopsis(dto.getSinopsis());
+        if (dto.getImagenAmpliada() != null) p.setImagenAmpliada(dto.getImagenAmpliada());
+    
+        // 🎭 Actualizar relaciones solo si fueron enviadas
         if (dto.getActoresIds() != null) {
-            p.setActores(dto.getActoresIds().stream()
+            Set<Actor> actores = dto.getActoresIds().stream()
                     .map(idActor -> actorRepo.findById(idActor)
                             .orElseThrow(() -> new RuntimeException("Actor no encontrado: " + idActor)))
-                    .collect(Collectors.toSet()));
+                    .collect(Collectors.toSet());
+            p.setActores(actores);
         }
-
+    
         if (dto.getDirectoresIds() != null) {
-            p.setDirectores(dto.getDirectoresIds().stream()
+            Set<Director> directores = dto.getDirectoresIds().stream()
                     .map(idDirector -> directorRepo.findById(idDirector)
                             .orElseThrow(() -> new RuntimeException("Director no encontrado: " + idDirector)))
-                    .collect(Collectors.toSet()));
+                    .collect(Collectors.toSet());
+            p.setDirectores(directores);
         }
-
+    
         if (dto.getGenerosIds() != null) {
-            p.setGeneros(dto.getGenerosIds().stream()
+            Set<Genero> generos = dto.getGenerosIds().stream()
                     .map(idGenero -> generoRepo.findById(idGenero)
                             .orElseThrow(() -> new RuntimeException("Género no encontrado: " + idGenero)))
-                    .collect(Collectors.toSet()));
+                    .collect(Collectors.toSet());
+            p.setGeneros(generos);
         }
-
+    
         peliculaRepo.save(p);
         PeliculaDTO peliculaEditada = toDTO(p);
-
-        // 🔹 Enviar mensaje a RabbitMQ cuando se edita la película
-        rabbitTemplate.convertAndSend(RabbitMQConfig.EXCHANGE_NAME, ROUTING_KEY, peliculaEditada);
-        System.out.println("📤 Enviado mensaje RabbitMQ: Película editada -> " + peliculaEditada.getTitulo());
-
+    
+        // 📨 RabbitMQ pero sin romper la operación
+        try {
+            rabbitTemplate.convertAndSend(RabbitMQConfig.EXCHANGE_NAME, ROUTING_KEY, peliculaEditada);
+            System.out.println("📩 Mensaje enviado a RabbitMQ correctamente.");
+        } catch (Exception ex) {
+            System.err.println("⚠️ RabbitMQ no disponible: " + ex.getMessage());
+        }
+    
         return peliculaEditada;
     }
-
+    
+    
     // =======================
     // Obtener detalle película
     // =======================

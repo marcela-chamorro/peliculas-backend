@@ -7,7 +7,7 @@ import com.unrn.peliculas.dto.PeliculaDTO;
 import com.unrn.peliculas.service.PeliculaService;
 
 @RestController
-@RequestMapping("/api/peliculas")
+@RequestMapping("/peliculas")
 public class PeliculaController {
     @Autowired
     PeliculaService peliculaService;
