@@ -14,12 +14,13 @@ import java.util.Set;
 public class Director {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "director_id")
     private Short directorId;
 
     @Column(nullable = false, length = 255)
     private String nombre;
 
-    @Column(nullable = false)
+    @Column(name = "last_update", nullable = false)
     private LocalDateTime lastUpdate = LocalDateTime.now();
 
     @ManyToMany(mappedBy = "directores")

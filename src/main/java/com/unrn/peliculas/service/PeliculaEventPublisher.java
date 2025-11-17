@@ -14,7 +14,7 @@ public class PeliculaEventPublisher {
     }
 
     public void enviarEvento(String tipoEvento, Object mensaje) {
-        rabbitTemplate.convertAndSend(RabbitMQConfig.EXCHANGE_NAME, tipoEvento, mensaje);
-        System.out.println("📤 Evento publicado: " + tipoEvento + " → " + mensaje);
+        rabbitTemplate.convertAndSend("${app.rabbitmq.exchange:peliculas.exchange}", tipoEvento, mensaje);
+        System.out.println("Evento publicado: " + tipoEvento + " → " + mensaje);
     }
 }

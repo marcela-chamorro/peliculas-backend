@@ -14,12 +14,13 @@ import java.util.Set;
 public class Actor {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "actor_id")
     private Short actorId;
 
     @Column(nullable = false, length = 255)
     private String nombre;
 
-    @Column(nullable = false)
+    @Column(name = "last_update", nullable = false)
     private LocalDateTime lastUpdate = LocalDateTime.now();
 
     @ManyToMany(mappedBy = "actores")

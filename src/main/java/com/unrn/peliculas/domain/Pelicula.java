@@ -7,9 +7,7 @@ import lombok.EqualsAndHashCode;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -20,13 +18,14 @@ public class Pelicula {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @EqualsAndHashCode.Include  // 🔥 FIX: Incluir el ID en equals/hashCode
+    @EqualsAndHashCode.Include  // Incluir el ID en equals/hashCode
+    @Column(name = "pelicula_id", nullable = false)
     private Integer peliculaId;
 
     @Column(nullable = false, length = 255)
     private String titulo;
 
-    @Column(nullable = false)
+    @Column(name = "fecha_salida", nullable = false)
     private LocalDate fechaSalida;
 
     @Column(nullable = false, precision = 10, scale = 2)
@@ -41,13 +40,10 @@ public class Pelicula {
     @Column(columnDefinition = "TEXT")
     private String sinopsis;
 
-    @Column(length = 255)
+    @Column(name = "imagen_ampliada", length = 255)
     private String imagenAmpliada;
 
-    @ManyToMany(mappedBy = "peliculas")
-    private List<Catalogo> catalogos = new ArrayList<>();
-
-    @Column(nullable = false)
+    @Column(name = "last_update", nullable = false)
     private LocalDateTime lastUpdate = LocalDateTime.now();
 
     @ManyToMany

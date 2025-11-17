@@ -1,47 +1,353 @@
--- Insertar directores
-INSERT INTO directores (nombre, last_update) VALUES
-('Christopher Nolan', CURRENT_TIMESTAMP),
-('Steven Spielberg', CURRENT_TIMESTAMP),
-('Quentin Tarantino', CURRENT_TIMESTAMP);
+select * from actores;
+select * from directores;
+select * from generos;
+select * from pelicula_actores;
+select * from pelicula_directores;
+select * from pelicula_generos;
+select * from peliculas;
 
--- Insertar actores
-INSERT INTO actores (nombre, last_update) VALUES
-('Leonardo DiCaprio', CURRENT_TIMESTAMP),
-('Brad Pitt', CURRENT_TIMESTAMP),
-('Tom Hanks', CURRENT_TIMESTAMP),
-('Scarlett Johansson', CURRENT_TIMESTAMP);
+truncate table actores cascade ;
+truncate table directores cascade ;
+truncate table generos cascade ;
+truncate table pelicula_actores cascade ;
+truncate table pelicula_directores cascade ;
+truncate table pelicula_generos cascade ;
+truncate table peliculas cascade;
 
--- Insertar géneros
-INSERT INTO generos (nombre, last_update) VALUES
-('Acción', CURRENT_TIMESTAMP),
-('Drama', CURRENT_TIMESTAMP),
-('Ciencia Ficción', CURRENT_TIMESTAMP),
-('Comedia', CURRENT_TIMESTAMP);
+-- Script de inserción de datos para el sistema de películas con imágenes reales de TMDB
+-- Primero verificamos si los datos existen antes de insertar
 
--- Insertar películas
-INSERT INTO peliculas (titulo, fecha_salida, precio, condicion, formato, sinopsis, imagen_ampliada, last_update) VALUES
-('Inception', '2010-07-16', 2500.00, 'Nuevo', 'Blu-ray', 'Un ladrón que roba secretos a través de sueños es contratado para implantar una idea en la mente de un CEO.', 'inception.jpg', CURRENT_TIMESTAMP),
-('Pulp Fiction', '1994-10-14', 1800.00, 'Usado', 'DVD', 'Historias entrelazadas de crimen y redención en Los Ángeles.', 'pulpfiction.jpg', CURRENT_TIMESTAMP),
-('Jurassic Park', '1993-06-11', 2000.00, 'Nuevo', '4K UHD', 'Un parque temático con dinosaurios clonados se convierte en un caos cuando las criaturas escapan.', 'jurassicpark.jpg', CURRENT_TIMESTAMP);
+-- Inserción de géneros (verificando existencia primero)
+INSERT INTO generos (nombre)
+SELECT 'Acción' WHERE NOT EXISTS (SELECT 1 FROM generos WHERE nombre = 'Acción')
+UNION ALL
+SELECT 'Aventura' WHERE NOT EXISTS (SELECT 1 FROM generos WHERE nombre = 'Aventura')
+UNION ALL
+SELECT 'Comedia' WHERE NOT EXISTS (SELECT 1 FROM generos WHERE nombre = 'Comedia')
+UNION ALL
+SELECT 'Drama' WHERE NOT EXISTS (SELECT 1 FROM generos WHERE nombre = 'Drama')
+UNION ALL
+SELECT 'Ciencia Ficción' WHERE NOT EXISTS (SELECT 1 FROM generos WHERE nombre = 'Ciencia Ficción')
+UNION ALL
+SELECT 'Fantasía' WHERE NOT EXISTS (SELECT 1 FROM generos WHERE nombre = 'Fantasía')
+UNION ALL
+SELECT 'Terror' WHERE NOT EXISTS (SELECT 1 FROM generos WHERE nombre = 'Terror')
+UNION ALL
+SELECT 'Romance' WHERE NOT EXISTS (SELECT 1 FROM generos WHERE nombre = 'Romance')
+UNION ALL
+SELECT 'Suspenso' WHERE NOT EXISTS (SELECT 1 FROM generos WHERE nombre = 'Suspenso')
+UNION ALL
+SELECT 'Animación' WHERE NOT EXISTS (SELECT 1 FROM generos WHERE nombre = 'Animación')
+UNION ALL
+SELECT 'Documental' WHERE NOT EXISTS (SELECT 1 FROM generos WHERE nombre = 'Documental')
+UNION ALL
+SELECT 'Crimen' WHERE NOT EXISTS (SELECT 1 FROM generos WHERE nombre = 'Crimen');
 
--- Relacionar películas con directores
-INSERT INTO pelicula_directores (pelicula_id, director_id, last_update) VALUES
-(1, 1, CURRENT_TIMESTAMP), -- Inception - Nolan
-(2, 3, CURRENT_TIMESTAMP), -- Pulp Fiction - Tarantino
-(3, 2, CURRENT_TIMESTAMP); -- Jurassic Park - Spielberg
+-- Inserción de directores (verificando existencia primero)
+INSERT INTO directores (nombre)
+SELECT 'Christopher Nolan' WHERE NOT EXISTS (SELECT 1 FROM directores WHERE nombre = 'Christopher Nolan')
+UNION ALL
+SELECT 'Steven Spielberg' WHERE NOT EXISTS (SELECT 1 FROM directores WHERE nombre = 'Steven Spielberg')
+UNION ALL
+SELECT 'Quentin Tarantino' WHERE NOT EXISTS (SELECT 1 FROM directores WHERE nombre = 'Quentin Tarantino')
+UNION ALL
+SELECT 'James Cameron' WHERE NOT EXISTS (SELECT 1 FROM directores WHERE nombre = 'James Cameron')
+UNION ALL
+SELECT 'Peter Jackson' WHERE NOT EXISTS (SELECT 1 FROM directores WHERE nombre = 'Peter Jackson')
+UNION ALL
+SELECT 'Hayao Miyazaki' WHERE NOT EXISTS (SELECT 1 FROM directores WHERE nombre = 'Hayao Miyazaki')
+UNION ALL
+SELECT 'Martin Scorsese' WHERE NOT EXISTS (SELECT 1 FROM directores WHERE nombre = 'Martin Scorsese')
+UNION ALL
+SELECT 'Alfonso Cuarón' WHERE NOT EXISTS (SELECT 1 FROM directores WHERE nombre = 'Alfonso Cuarón')
+UNION ALL
+SELECT 'Guillermo del Toro' WHERE NOT EXISTS (SELECT 1 FROM directores WHERE nombre = 'Guillermo del Toro')
+UNION ALL
+SELECT 'Ridley Scott' WHERE NOT EXISTS (SELECT 1 FROM directores WHERE nombre = 'Ridley Scott')
+UNION ALL
+SELECT 'Tim Burton' WHERE NOT EXISTS (SELECT 1 FROM directores WHERE nombre = 'Tim Burton')
+UNION ALL
+SELECT 'David Fincher' WHERE NOT EXISTS (SELECT 1 FROM directores WHERE nombre = 'David Fincher')
+UNION ALL
+SELECT 'Damien Chazelle' WHERE NOT EXISTS (SELECT 1 FROM directores WHERE nombre = 'Damien Chazelle')
+UNION ALL
+SELECT 'Lana Wachowski' WHERE NOT EXISTS (SELECT 1 FROM directores WHERE nombre = 'Lana Wachowski')
+UNION ALL
+SELECT 'Ryan Coogler' WHERE NOT EXISTS (SELECT 1 FROM directores WHERE nombre = 'Ryan Coogler')
+UNION ALL
+SELECT 'Jonathan Demme' WHERE NOT EXISTS (SELECT 1 FROM directores WHERE nombre = 'Jonathan Demme');
 
--- Relacionar películas con actores
-INSERT INTO pelicula_actores (pelicula_id, actor_id, last_update) VALUES
-(1, 1, CURRENT_TIMESTAMP), -- Inception - DiCaprio
-(2, 1, CURRENT_TIMESTAMP), -- Pulp Fiction - DiCaprio (ejemplo)
-(2, 2, CURRENT_TIMESTAMP), -- Pulp Fiction - Brad Pitt
-(3, 3, CURRENT_TIMESTAMP), -- Jurassic Park - Tom Hanks (ejemplo ficticio)
-(3, 4, CURRENT_TIMESTAMP); -- Jurassic Park - Scarlett Johansson (ejemplo ficticio)
+-- Inserción de actores (verificando existencia primero)
+INSERT INTO actores (nombre)
+SELECT 'Leonardo DiCaprio' WHERE NOT EXISTS (SELECT 1 FROM actores WHERE nombre = 'Leonardo DiCaprio')
+UNION ALL
+SELECT 'Tom Hanks' WHERE NOT EXISTS (SELECT 1 FROM actores WHERE nombre = 'Tom Hanks')
+UNION ALL
+SELECT 'Meryl Streep' WHERE NOT EXISTS (SELECT 1 FROM actores WHERE nombre = 'Meryl Streep')
+UNION ALL
+SELECT 'Robert Downey Jr.' WHERE NOT EXISTS (SELECT 1 FROM actores WHERE nombre = 'Robert Downey Jr.')
+UNION ALL
+SELECT 'Scarlett Johansson' WHERE NOT EXISTS (SELECT 1 FROM actores WHERE nombre = 'Scarlett Johansson')
+UNION ALL
+SELECT 'Brad Pitt' WHERE NOT EXISTS (SELECT 1 FROM actores WHERE nombre = 'Brad Pitt')
+UNION ALL
+SELECT 'Jennifer Lawrence' WHERE NOT EXISTS (SELECT 1 FROM actores WHERE nombre = 'Jennifer Lawrence')
+UNION ALL
+SELECT 'Denzel Washington' WHERE NOT EXISTS (SELECT 1 FROM actores WHERE nombre = 'Denzel Washington')
+UNION ALL
+SELECT 'Morgan Freeman' WHERE NOT EXISTS (SELECT 1 FROM actores WHERE nombre = 'Morgan Freeman')
+UNION ALL
+SELECT 'Samuel L. Jackson' WHERE NOT EXISTS (SELECT 1 FROM actores WHERE nombre = 'Samuel L. Jackson')
+UNION ALL
+SELECT 'Natalie Portman' WHERE NOT EXISTS (SELECT 1 FROM actores WHERE nombre = 'Natalie Portman')
+UNION ALL
+SELECT 'Christian Bale' WHERE NOT EXISTS (SELECT 1 FROM actores WHERE nombre = 'Christian Bale')
+UNION ALL
+SELECT 'Anne Hathaway' WHERE NOT EXISTS (SELECT 1 FROM actores WHERE nombre = 'Anne Hathaway')
+UNION ALL
+SELECT 'Ryan Gosling' WHERE NOT EXISTS (SELECT 1 FROM actores WHERE nombre = 'Ryan Gosling')
+UNION ALL
+SELECT 'Emma Stone' WHERE NOT EXISTS (SELECT 1 FROM actores WHERE nombre = 'Emma Stone');
 
--- Relacionar películas con géneros
-INSERT INTO pelicula_generos (pelicula_id, genero_id, last_update) VALUES
-(1, 1, CURRENT_TIMESTAMP), -- Inception - Acción
-(1, 3, CURRENT_TIMESTAMP), -- Inception - Ciencia Ficción
-(2, 1, CURRENT_TIMESTAMP), -- Pulp Fiction - Acción
-(2, 2, CURRENT_TIMESTAMP), -- Pulp Fiction - Drama
-(3, 3, CURRENT_TIMESTAMP); -- Jurassic Park - Ciencia Ficción
+-- Inserción de películas (verificando existencia primero y convirtiendo fechas)
+INSERT INTO peliculas (titulo, fecha_salida, precio, condicion, formato, sinopsis, imagen_ampliada)
+SELECT
+    'Inception',
+    '2010-07-16'::DATE,
+    15.99,
+    'Nuevo',
+    'Blu-ray',
+    'Un ladrón que roba secretos corporativos a través del uso de la tecnología de sueños compartidos tiene la tarea inversa de plantar una idea en la mente de un CEO.',
+    'https://image.tmdb.org/t/p/w500/9gk7adHYeDvHkCSEqAvQNLV5Uge.jpg'
+WHERE NOT EXISTS (SELECT 1 FROM peliculas WHERE titulo = 'Inception')
+UNION ALL
+SELECT
+    'The Dark Knight',
+    '2008-07-18'::DATE,
+    12.50,
+    'Usado',
+    'DVD',
+    'Batman se enfrenta al Joker, un criminal que siembra el caos en Gotham City.',
+    'https://image.tmdb.org/t/p/w500/qJ2tW6WMUDux911r6m7haRef0WH.jpg'
+WHERE NOT EXISTS (SELECT 1 FROM peliculas WHERE titulo = 'The Dark Knight')
+UNION ALL
+SELECT
+    'Pulp Fiction',
+    '1994-10-14'::DATE,
+    9.99,
+    'Usado',
+    'DVD',
+    'Las vidas de dos matones, un boxeador y una pareja de bandidos se entrelazan en cuatro historias de violencia y redención.',
+    'https://image.tmdb.org/t/p/w500/d5iIlFn5s0ImszYzBPb8JPIfbXD.jpg'
+WHERE NOT EXISTS (SELECT 1 FROM peliculas WHERE titulo = 'Pulp Fiction')
+UNION ALL
+SELECT
+    'Avatar',
+    '2009-12-18'::DATE,
+    18.75,
+    'Nuevo',
+    'Blu-ray',
+    'Un marine parapléjico es enviado a la luna Pandora en una misión única, pero se debate entre seguir órdenes y proteger el mundo que considera su hogar.',
+    'https://image.tmdb.org/t/p/w500/kyeqWdyUXW608qlYkRqosgbbJyK.jpg'
+WHERE NOT EXISTS (SELECT 1 FROM peliculas WHERE titulo = 'Avatar')
+UNION ALL
+SELECT
+    'Spirited Away',
+    '2001-07-20'::DATE,
+    14.25,
+    'Nuevo',
+    'Blu-ray',
+    'Durante su mudanza, una niña de 10 años se aventura en un mundo de dioses, brujas y espíritus, donde los humanos se convierten en bestias.',
+    'https://image.tmdb.org/t/p/w500/39wmItIWsg5sZMyRUHLkWBcuVCM.jpg'
+WHERE NOT EXISTS (SELECT 1 FROM peliculas WHERE titulo = 'Spirited Away')
+UNION ALL
+SELECT
+    'The Godfather',
+    '1972-03-24'::DATE,
+    8.99,
+    'Usado',
+    'DVD',
+    'El patriarca envejecido de una dinastía del crimen organizado transfiere el control de su imperio clandestino a su hijo reacio.',
+    'https://image.tmdb.org/t/p/w500/3bhkrj58Vtu7enYsRolD1fZdja1.jpg'
+WHERE NOT EXISTS (SELECT 1 FROM peliculas WHERE titulo = 'The Godfather')
+UNION ALL
+SELECT
+    'Forrest Gump',
+    '1994-07-06'::DATE,
+    11.25,
+    'Usado',
+    'DVD',
+    'Las presidencias de Kennedy y Johnson, la guerra de Vietnam y otros eventos históricos se desarrollan desde la perspectiva de un hombre de Alabama.',
+    'https://image.tmdb.org/t/p/w500/arw2vcBveWOVZr6pxd9XTd1TdQa.jpg'
+WHERE NOT EXISTS (SELECT 1 FROM peliculas WHERE titulo = 'Forrest Gump')
+UNION ALL
+SELECT
+    'Interstellar',
+    '2014-11-07'::DATE,
+    16.50,
+    'Nuevo',
+    'Blu-ray',
+    'Un equipo de exploradores viaja a través de un agujero de gusano en el espacio en un intento por asegurar la supervivencia de la humanidad.',
+    'https://image.tmdb.org/t/p/w500/gEU2QniE6E77NI6lCU6MxlNBvIx.jpg'
+WHERE NOT EXISTS (SELECT 1 FROM peliculas WHERE titulo = 'Interstellar')
+UNION ALL
+SELECT
+    'The Shawshank Redemption',
+    '1994-10-14'::DATE,
+    7.99,
+    'Usado',
+    'DVD',
+    'Dos hombres encarcelados se vinculan a lo largo de los años, encontrando consuelo y eventual redención a través de actos de decencia común.',
+    'https://image.tmdb.org/t/p/w500/hBcY0fEyRebn97iyjtVyYWo6QnO.jpg'
+WHERE NOT EXISTS (SELECT 1 FROM peliculas WHERE titulo = 'The Shawshank Redemption')
+UNION ALL
+SELECT
+    'La La Land',
+    '2016-12-09'::DATE,
+    13.75,
+    'Nuevo',
+    'Blu-ray',
+    'Mientras buscan fama en la ciudad de Los Ángeles, un pianista de jazz y una actriz se enamoran mientras luchan por reconciliar sus aspiraciones artísticas.',
+    'https://image.tmdb.org/t/p/w500/uDO8zWDhfWwoFdKS4fzkUJt0Rf0.jpg'
+WHERE NOT EXISTS (SELECT 1 FROM peliculas WHERE titulo = 'La La Land')
+UNION ALL
+SELECT
+    'The Matrix',
+    '1999-03-31'::DATE,
+    10.99,
+    'Usado',
+    'DVD',
+    'Un hacker se entera de la verdad sobre su realidad y su papel en la guerra contra sus controladores.',
+    'https://image.tmdb.org/t/p/w500/f89U3ADr1oiB1s9GkdPOEpXUk5H.jpg'
+WHERE NOT EXISTS (SELECT 1 FROM peliculas WHERE titulo = 'The Matrix')
+UNION ALL
+SELECT
+    'Titanic',
+    '1997-12-19'::DATE,
+    9.50,
+    'Usado',
+    'DVD',
+    'Una aristócrata de diecisiete años se enamora de un artista amable pero pobre a bordo del lujoso y desafortunado R.M.S. Titanic.',
+    'https://image.tmdb.org/t/p/w500/9xjZS2rlVxm8SFx8kPC3aIGCOYQ.jpg'
+WHERE NOT EXISTS (SELECT 1 FROM peliculas WHERE titulo = 'Titanic')
+UNION ALL
+SELECT
+    'Jurassic Park',
+    '1993-06-11'::DATE,
+    12.25,
+    'Usado',
+    'DVD',
+    'Durante una visita previa a un parque temático, un empresario multimillonario, un pequeño grupo es atacado por dinosaurios clonados.',
+    'https://image.tmdb.org/t/p/w500/oU7Oq2kFAAlGqbU4VoAE36g4hoI.jpg'
+WHERE NOT EXISTS (SELECT 1 FROM peliculas WHERE titulo = 'Jurassic Park')
+UNION ALL
+SELECT
+    'Black Panther',
+    '2018-02-16'::DATE,
+    17.25,
+    'Nuevo',
+    'Blu-ray',
+    'T Challa, heredero del reino oculto de Wakanda, debe dar un paso adelante para liderar a su pueblo en un nuevo camino.',
+    'https://image.tmdb.org/t/p/w500/uxzzxijgPIY7slzFvMotPv8wjKA.jpg'
+WHERE NOT EXISTS (SELECT 1 FROM peliculas WHERE titulo = 'Black Panther')
+UNION ALL
+SELECT
+    'The Silence of the Lambs',
+    '1991-02-14'::DATE,
+    8.25,
+    'Usado',
+    'DVD',
+    'Una joven agente del FBI debe recibir la ayuda de un asesino en serie encarcelado y manipulador para ayudar a atrapar a otro asesino en serie.',
+    'https://image.tmdb.org/t/p/w500/uS9m8OBk1A8eM9I042bx8XXpqAq.jpg'
+WHERE NOT EXISTS (SELECT 1 FROM peliculas WHERE titulo = 'The Silence of the Lambs');
+
+-- Ahora insertamos las relaciones usando subconsultas para obtener los IDs correctos
+-- Relaciones Película - Directores
+INSERT INTO pelicula_directores (pelicula_id, director_id)
+SELECT p.pelicula_id, d.director_id
+FROM peliculas p
+         CROSS JOIN directores d
+WHERE (p.titulo = 'Inception' AND d.nombre = 'Christopher Nolan')
+   OR (p.titulo = 'The Dark Knight' AND d.nombre = 'Christopher Nolan')
+   OR (p.titulo = 'Pulp Fiction' AND d.nombre = 'Quentin Tarantino')
+   OR (p.titulo = 'Avatar' AND d.nombre = 'James Cameron')
+   OR (p.titulo = 'Spirited Away' AND d.nombre = 'Hayao Miyazaki')
+   OR (p.titulo = 'The Godfather' AND d.nombre = 'Martin Scorsese')
+   OR (p.titulo = 'Forrest Gump' AND d.nombre = 'Steven Spielberg')
+   OR (p.titulo = 'Interstellar' AND d.nombre = 'Christopher Nolan')
+   OR (p.titulo = 'The Shawshank Redemption' AND d.nombre = 'Steven Spielberg')
+   OR (p.titulo = 'La La Land' AND d.nombre = 'Damien Chazelle')
+   OR (p.titulo = 'The Matrix' AND d.nombre = 'Lana Wachowski')
+   OR (p.titulo = 'Titanic' AND d.nombre = 'James Cameron')
+   OR (p.titulo = 'Jurassic Park' AND d.nombre = 'Steven Spielberg')
+   OR (p.titulo = 'Black Panther' AND d.nombre = 'Ryan Coogler')
+   OR (p.titulo = 'The Silence of the Lambs' AND d.nombre = 'Jonathan Demme')
+    AND NOT EXISTS (
+        SELECT 1 FROM pelicula_directores pd
+        WHERE pd.pelicula_id = p.pelicula_id AND pd.director_id = d.director_id
+    );
+
+-- Relaciones Película - Actores
+INSERT INTO pelicula_actores (pelicula_id, actor_id)
+SELECT p.pelicula_id, a.actor_id
+FROM peliculas p
+         CROSS JOIN actores a
+WHERE (p.titulo = 'Inception' AND a.nombre IN ('Leonardo DiCaprio', 'Robert Downey Jr.', 'Samuel L. Jackson'))
+   OR (p.titulo = 'The Dark Knight' AND a.nombre IN ('Christian Bale', 'Samuel L. Jackson', 'Anne Hathaway'))
+   OR (p.titulo = 'Pulp Fiction' AND a.nombre IN ('Brad Pitt', 'Samuel L. Jackson', 'Natalie Portman'))
+   OR (p.titulo = 'Avatar' AND a.nombre IN ('Leonardo DiCaprio', 'Scarlett Johansson', 'Denzel Washington'))
+   OR (p.titulo = 'Spirited Away' AND a.nombre IN ('Natalie Portman', 'Anne Hathaway'))
+   OR (p.titulo = 'The Godfather' AND a.nombre IN ('Leonardo DiCaprio', 'Morgan Freeman', 'Samuel L. Jackson'))
+   OR (p.titulo = 'Forrest Gump' AND a.nombre IN ('Tom Hanks', 'Meryl Streep', 'Brad Pitt'))
+   OR (p.titulo = 'Interstellar' AND a.nombre IN ('Christian Bale', 'Anne Hathaway', 'Leonardo DiCaprio'))
+   OR (p.titulo = 'The Shawshank Redemption' AND a.nombre IN ('Tom Hanks', 'Morgan Freeman', 'Brad Pitt'))
+   OR (p.titulo = 'La La Land' AND a.nombre IN ('Ryan Gosling', 'Emma Stone', 'Meryl Streep'))
+   OR (p.titulo = 'The Matrix' AND a.nombre IN ('Christian Bale', 'Samuel L. Jackson', 'Scarlett Johansson'))
+   OR (p.titulo = 'Titanic' AND a.nombre IN ('Leonardo DiCaprio', 'Scarlett Johansson', 'Jennifer Lawrence'))
+   OR (p.titulo = 'Jurassic Park' AND a.nombre IN ('Tom Hanks', 'Meryl Streep', 'Morgan Freeman'))
+   OR (p.titulo = 'Black Panther' AND a.nombre IN ('Denzel Washington', 'Samuel L. Jackson', 'Natalie Portman'))
+   OR (p.titulo = 'The Silence of the Lambs' AND a.nombre IN ('Meryl Streep', 'Brad Pitt', 'Morgan Freeman'))
+    AND NOT EXISTS (
+        SELECT 1 FROM pelicula_actores pa
+        WHERE pa.pelicula_id = p.pelicula_id AND pa.actor_id = a.actor_id
+    );
+
+-- Relaciones Película - Géneros
+INSERT INTO pelicula_generos (pelicula_id, genero_id)
+SELECT p.pelicula_id, g.genero_id
+FROM peliculas p
+         CROSS JOIN generos g
+WHERE (p.titulo = 'Inception' AND g.nombre IN ('Ciencia Ficción', 'Drama', 'Suspenso'))
+   OR (p.titulo = 'The Dark Knight' AND g.nombre IN ('Acción', 'Drama', 'Suspenso'))
+   OR (p.titulo = 'Pulp Fiction' AND g.nombre IN ('Comedia', 'Drama', 'Crimen'))
+   OR (p.titulo = 'Avatar' AND g.nombre IN ('Acción', 'Aventura', 'Ciencia Ficción'))
+   OR (p.titulo = 'Spirited Away' AND g.nombre IN ('Fantasía', 'Aventura', 'Animación'))
+   OR (p.titulo = 'The Godfather' AND g.nombre IN ('Drama', 'Crimen', 'Suspenso'))
+   OR (p.titulo = 'Forrest Gump' AND g.nombre IN ('Drama', 'Comedia', 'Romance'))
+   OR (p.titulo = 'Interstellar' AND g.nombre IN ('Ciencia Ficción', 'Aventura', 'Drama'))
+   OR (p.titulo = 'The Shawshank Redemption' AND g.nombre IN ('Drama', 'Suspenso'))
+   OR (p.titulo = 'La La Land' AND g.nombre IN ('Romance', 'Drama', 'Comedia'))
+   OR (p.titulo = 'The Matrix' AND g.nombre IN ('Acción', 'Ciencia Ficción', 'Suspenso'))
+   OR (p.titulo = 'Titanic' AND g.nombre IN ('Romance', 'Drama', 'Aventura'))
+   OR (p.titulo = 'Jurassic Park' AND g.nombre IN ('Acción', 'Aventura', 'Ciencia Ficción'))
+   OR (p.titulo = 'Black Panther' AND g.nombre IN ('Acción', 'Aventura', 'Ciencia Ficción'))
+   OR (p.titulo = 'The Silence of the Lambs' AND g.nombre IN ('Suspenso', 'Crimen', 'Drama'))
+    AND NOT EXISTS (
+        SELECT 1 FROM pelicula_generos pg
+        WHERE pg.pelicula_id = p.pelicula_id AND pg.genero_id = g.genero_id
+    );
+
+-- Verificación de datos insertados
+SELECT 'Géneros en BD: ' || COUNT(*) FROM generos
+UNION ALL
+SELECT 'Directores en BD: ' || COUNT(*) FROM directores
+UNION ALL
+SELECT 'Actores en BD: ' || COUNT(*) FROM actores
+UNION ALL
+SELECT 'Películas en BD: ' || COUNT(*) FROM peliculas
+UNION ALL
+SELECT 'Relaciones película-director: ' || COUNT(*) FROM pelicula_directores
+UNION ALL
+SELECT 'Relaciones película-actor: ' || COUNT(*) FROM pelicula_actores
+UNION ALL
+SELECT 'Relaciones película-género: ' || COUNT(*) FROM pelicula_generos;
