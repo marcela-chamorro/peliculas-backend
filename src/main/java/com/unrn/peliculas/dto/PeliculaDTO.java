@@ -1,5 +1,6 @@
 package com.unrn.peliculas.dto;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Builder;
 import lombok.Data;
 
@@ -9,6 +10,7 @@ import java.util.List;
 
 @Data
 @Builder
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class PeliculaDTO {
     private Integer peliculaId;
     private String titulo;

@@ -5,6 +5,9 @@ import com.unrn.peliculas.domain.Director;
 import com.unrn.peliculas.domain.Genero;
 import com.unrn.peliculas.domain.Pelicula;
 import com.unrn.peliculas.dto.PeliculaDTO;
+import com.unrn.peliculas.event.EventType;
+import com.unrn.peliculas.event.dto.Event;
+import com.unrn.peliculas.event.dto.PeliculaSimplificada;
 import com.unrn.peliculas.repository.ActorRepository;
 import com.unrn.peliculas.repository.DirectorRepository;
 import com.unrn.peliculas.repository.GeneroRepository;
@@ -38,6 +41,9 @@ public class PeliculaService {
     @Autowired
     private GeneroRepository generoRepo;
 
+    @Autowired
+    private PeliculaEventPublisher eventPublisher;
+
     // =======================
     // Métodos CRUD existentes
     // =======================
@@ -46,6 +52,15 @@ public class PeliculaService {
     public PeliculaDTO crearPelicula(PeliculaDTO dto) {
         Pelicula p = toEntity(dto);
         peliculaRepo.save(p);
+        
+        // Publicar evento CREATE vía RabbitMQ
+        Event<String, PeliculaSimplificada> evento = new Event<>(
+            EventType.CREATE,
+            String.valueOf(p.getPeliculaId()),
+            toPeliculaSimplificada(p)
+        );
+        eventPublisher.enviarEvento(evento);
+        
         return toDTO(p);
     }
 
@@ -86,6 +101,15 @@ public class PeliculaService {
         }
 
         peliculaRepo.save(p);
+        
+        // Publicar evento UPDATE vía RabbitMQ
+        Event<String, PeliculaSimplificada> evento = new Event<>(
+            EventType.UPDATE,
+            String.valueOf(p.getPeliculaId()),
+            toPeliculaSimplificada(p)
+        );
+        eventPublisher.enviarEvento(evento);
+        
         return toDTO(p);
     }
 
@@ -241,5 +265,20 @@ public class PeliculaService {
         }
 
         return p;
+    }
+
+    // Convertir Pelicula a PeliculaSimplificada para eventos RabbitMQ
+    private PeliculaSimplificada toPeliculaSimplificada(Pelicula p) {
+        return new PeliculaSimplificada(
+            String.valueOf(p.getPeliculaId()),
+            p.getTitulo(),
+            p.getFechaSalida(),
+            p.getPrecio(),
+            p.getCondicion(),
+            p.getFormato(),
+            p.getSinopsis(),
+            p.getImagenAmpliada(),
+            p.getLastUpdate()
+        );
     }
 }

@@ -18,99 +18,99 @@ truncate table peliculas cascade;
 -- Primero verificamos si los datos existen antes de insertar
 
 -- Inserción de géneros (verificando existencia primero)
-INSERT INTO generos (nombre)
-SELECT 'Acción' WHERE NOT EXISTS (SELECT 1 FROM generos WHERE nombre = 'Acción')
+INSERT INTO generos (nombre, last_update)
+SELECT 'Acción', CURRENT_TIMESTAMP WHERE NOT EXISTS (SELECT 1 FROM generos WHERE nombre = 'Acción')
 UNION ALL
-SELECT 'Aventura' WHERE NOT EXISTS (SELECT 1 FROM generos WHERE nombre = 'Aventura')
+SELECT 'Aventura', CURRENT_TIMESTAMP WHERE NOT EXISTS (SELECT 1 FROM generos WHERE nombre = 'Aventura')
 UNION ALL
-SELECT 'Comedia' WHERE NOT EXISTS (SELECT 1 FROM generos WHERE nombre = 'Comedia')
+SELECT 'Comedia', CURRENT_TIMESTAMP WHERE NOT EXISTS (SELECT 1 FROM generos WHERE nombre = 'Comedia')
 UNION ALL
-SELECT 'Drama' WHERE NOT EXISTS (SELECT 1 FROM generos WHERE nombre = 'Drama')
+SELECT 'Drama', CURRENT_TIMESTAMP WHERE NOT EXISTS (SELECT 1 FROM generos WHERE nombre = 'Drama')
 UNION ALL
-SELECT 'Ciencia Ficción' WHERE NOT EXISTS (SELECT 1 FROM generos WHERE nombre = 'Ciencia Ficción')
+SELECT 'Ciencia Ficción', CURRENT_TIMESTAMP WHERE NOT EXISTS (SELECT 1 FROM generos WHERE nombre = 'Ciencia Ficción')
 UNION ALL
-SELECT 'Fantasía' WHERE NOT EXISTS (SELECT 1 FROM generos WHERE nombre = 'Fantasía')
+SELECT 'Fantasía', CURRENT_TIMESTAMP WHERE NOT EXISTS (SELECT 1 FROM generos WHERE nombre = 'Fantasía')
 UNION ALL
-SELECT 'Terror' WHERE NOT EXISTS (SELECT 1 FROM generos WHERE nombre = 'Terror')
+SELECT 'Terror', CURRENT_TIMESTAMP WHERE NOT EXISTS (SELECT 1 FROM generos WHERE nombre = 'Terror')
 UNION ALL
-SELECT 'Romance' WHERE NOT EXISTS (SELECT 1 FROM generos WHERE nombre = 'Romance')
+SELECT 'Romance', CURRENT_TIMESTAMP WHERE NOT EXISTS (SELECT 1 FROM generos WHERE nombre = 'Romance')
 UNION ALL
-SELECT 'Suspenso' WHERE NOT EXISTS (SELECT 1 FROM generos WHERE nombre = 'Suspenso')
+SELECT 'Suspenso', CURRENT_TIMESTAMP WHERE NOT EXISTS (SELECT 1 FROM generos WHERE nombre = 'Suspenso')
 UNION ALL
-SELECT 'Animación' WHERE NOT EXISTS (SELECT 1 FROM generos WHERE nombre = 'Animación')
+SELECT 'Animación', CURRENT_TIMESTAMP WHERE NOT EXISTS (SELECT 1 FROM generos WHERE nombre = 'Animación')
 UNION ALL
-SELECT 'Documental' WHERE NOT EXISTS (SELECT 1 FROM generos WHERE nombre = 'Documental')
+SELECT 'Documental', CURRENT_TIMESTAMP WHERE NOT EXISTS (SELECT 1 FROM generos WHERE nombre = 'Documental')
 UNION ALL
-SELECT 'Crimen' WHERE NOT EXISTS (SELECT 1 FROM generos WHERE nombre = 'Crimen');
+SELECT 'Crimen', CURRENT_TIMESTAMP WHERE NOT EXISTS (SELECT 1 FROM generos WHERE nombre = 'Crimen');
 
 -- Inserción de directores (verificando existencia primero)
-INSERT INTO directores (nombre)
-SELECT 'Christopher Nolan' WHERE NOT EXISTS (SELECT 1 FROM directores WHERE nombre = 'Christopher Nolan')
+INSERT INTO directores (nombre, last_update)
+SELECT 'Christopher Nolan', CURRENT_TIMESTAMP WHERE NOT EXISTS (SELECT 1 FROM directores WHERE nombre = 'Christopher Nolan')
 UNION ALL
-SELECT 'Steven Spielberg' WHERE NOT EXISTS (SELECT 1 FROM directores WHERE nombre = 'Steven Spielberg')
+SELECT 'Steven Spielberg', CURRENT_TIMESTAMP WHERE NOT EXISTS (SELECT 1 FROM directores WHERE nombre = 'Steven Spielberg')
 UNION ALL
-SELECT 'Quentin Tarantino' WHERE NOT EXISTS (SELECT 1 FROM directores WHERE nombre = 'Quentin Tarantino')
+SELECT 'Quentin Tarantino', CURRENT_TIMESTAMP WHERE NOT EXISTS (SELECT 1 FROM directores WHERE nombre = 'Quentin Tarantino')
 UNION ALL
-SELECT 'James Cameron' WHERE NOT EXISTS (SELECT 1 FROM directores WHERE nombre = 'James Cameron')
+SELECT 'James Cameron', CURRENT_TIMESTAMP WHERE NOT EXISTS (SELECT 1 FROM directores WHERE nombre = 'James Cameron')
 UNION ALL
-SELECT 'Peter Jackson' WHERE NOT EXISTS (SELECT 1 FROM directores WHERE nombre = 'Peter Jackson')
+SELECT 'Peter Jackson', CURRENT_TIMESTAMP WHERE NOT EXISTS (SELECT 1 FROM directores WHERE nombre = 'Peter Jackson')
 UNION ALL
-SELECT 'Hayao Miyazaki' WHERE NOT EXISTS (SELECT 1 FROM directores WHERE nombre = 'Hayao Miyazaki')
+SELECT 'Hayao Miyazaki', CURRENT_TIMESTAMP WHERE NOT EXISTS (SELECT 1 FROM directores WHERE nombre = 'Hayao Miyazaki')
 UNION ALL
-SELECT 'Martin Scorsese' WHERE NOT EXISTS (SELECT 1 FROM directores WHERE nombre = 'Martin Scorsese')
+SELECT 'Martin Scorsese', CURRENT_TIMESTAMP WHERE NOT EXISTS (SELECT 1 FROM directores WHERE nombre = 'Martin Scorsese')
 UNION ALL
-SELECT 'Alfonso Cuarón' WHERE NOT EXISTS (SELECT 1 FROM directores WHERE nombre = 'Alfonso Cuarón')
+SELECT 'Alfonso Cuarón', CURRENT_TIMESTAMP WHERE NOT EXISTS (SELECT 1 FROM directores WHERE nombre = 'Alfonso Cuarón')
 UNION ALL
-SELECT 'Guillermo del Toro' WHERE NOT EXISTS (SELECT 1 FROM directores WHERE nombre = 'Guillermo del Toro')
+SELECT 'Guillermo del Toro', CURRENT_TIMESTAMP WHERE NOT EXISTS (SELECT 1 FROM directores WHERE nombre = 'Guillermo del Toro')
 UNION ALL
-SELECT 'Ridley Scott' WHERE NOT EXISTS (SELECT 1 FROM directores WHERE nombre = 'Ridley Scott')
+SELECT 'Ridley Scott', CURRENT_TIMESTAMP WHERE NOT EXISTS (SELECT 1 FROM directores WHERE nombre = 'Ridley Scott')
 UNION ALL
-SELECT 'Tim Burton' WHERE NOT EXISTS (SELECT 1 FROM directores WHERE nombre = 'Tim Burton')
+SELECT 'Tim Burton', CURRENT_TIMESTAMP WHERE NOT EXISTS (SELECT 1 FROM directores WHERE nombre = 'Tim Burton')
 UNION ALL
-SELECT 'David Fincher' WHERE NOT EXISTS (SELECT 1 FROM directores WHERE nombre = 'David Fincher')
+SELECT 'David Fincher', CURRENT_TIMESTAMP WHERE NOT EXISTS (SELECT 1 FROM directores WHERE nombre = 'David Fincher')
 UNION ALL
-SELECT 'Damien Chazelle' WHERE NOT EXISTS (SELECT 1 FROM directores WHERE nombre = 'Damien Chazelle')
+SELECT 'Damien Chazelle', CURRENT_TIMESTAMP WHERE NOT EXISTS (SELECT 1 FROM directores WHERE nombre = 'Damien Chazelle')
 UNION ALL
-SELECT 'Lana Wachowski' WHERE NOT EXISTS (SELECT 1 FROM directores WHERE nombre = 'Lana Wachowski')
+SELECT 'Lana Wachowski', CURRENT_TIMESTAMP WHERE NOT EXISTS (SELECT 1 FROM directores WHERE nombre = 'Lana Wachowski')
 UNION ALL
-SELECT 'Ryan Coogler' WHERE NOT EXISTS (SELECT 1 FROM directores WHERE nombre = 'Ryan Coogler')
+SELECT 'Ryan Coogler', CURRENT_TIMESTAMP WHERE NOT EXISTS (SELECT 1 FROM directores WHERE nombre = 'Ryan Coogler')
 UNION ALL
-SELECT 'Jonathan Demme' WHERE NOT EXISTS (SELECT 1 FROM directores WHERE nombre = 'Jonathan Demme');
+SELECT 'Jonathan Demme', CURRENT_TIMESTAMP WHERE NOT EXISTS (SELECT 1 FROM directores WHERE nombre = 'Jonathan Demme');
 
 -- Inserción de actores (verificando existencia primero)
-INSERT INTO actores (nombre)
-SELECT 'Leonardo DiCaprio' WHERE NOT EXISTS (SELECT 1 FROM actores WHERE nombre = 'Leonardo DiCaprio')
+INSERT INTO actores (nombre, last_update)
+SELECT 'Leonardo DiCaprio', CURRENT_TIMESTAMP WHERE NOT EXISTS (SELECT 1 FROM actores WHERE nombre = 'Leonardo DiCaprio')
 UNION ALL
-SELECT 'Tom Hanks' WHERE NOT EXISTS (SELECT 1 FROM actores WHERE nombre = 'Tom Hanks')
+SELECT 'Tom Hanks', CURRENT_TIMESTAMP WHERE NOT EXISTS (SELECT 1 FROM actores WHERE nombre = 'Tom Hanks')
 UNION ALL
-SELECT 'Meryl Streep' WHERE NOT EXISTS (SELECT 1 FROM actores WHERE nombre = 'Meryl Streep')
+SELECT 'Meryl Streep', CURRENT_TIMESTAMP WHERE NOT EXISTS (SELECT 1 FROM actores WHERE nombre = 'Meryl Streep')
 UNION ALL
-SELECT 'Robert Downey Jr.' WHERE NOT EXISTS (SELECT 1 FROM actores WHERE nombre = 'Robert Downey Jr.')
+SELECT 'Robert Downey Jr.', CURRENT_TIMESTAMP WHERE NOT EXISTS (SELECT 1 FROM actores WHERE nombre = 'Robert Downey Jr.')
 UNION ALL
-SELECT 'Scarlett Johansson' WHERE NOT EXISTS (SELECT 1 FROM actores WHERE nombre = 'Scarlett Johansson')
+SELECT 'Scarlett Johansson', CURRENT_TIMESTAMP WHERE NOT EXISTS (SELECT 1 FROM actores WHERE nombre = 'Scarlett Johansson')
 UNION ALL
-SELECT 'Brad Pitt' WHERE NOT EXISTS (SELECT 1 FROM actores WHERE nombre = 'Brad Pitt')
+SELECT 'Brad Pitt', CURRENT_TIMESTAMP WHERE NOT EXISTS (SELECT 1 FROM actores WHERE nombre = 'Brad Pitt')
 UNION ALL
-SELECT 'Jennifer Lawrence' WHERE NOT EXISTS (SELECT 1 FROM actores WHERE nombre = 'Jennifer Lawrence')
+SELECT 'Jennifer Lawrence', CURRENT_TIMESTAMP WHERE NOT EXISTS (SELECT 1 FROM actores WHERE nombre = 'Jennifer Lawrence')
 UNION ALL
-SELECT 'Denzel Washington' WHERE NOT EXISTS (SELECT 1 FROM actores WHERE nombre = 'Denzel Washington')
+SELECT 'Denzel Washington', CURRENT_TIMESTAMP WHERE NOT EXISTS (SELECT 1 FROM actores WHERE nombre = 'Denzel Washington')
 UNION ALL
-SELECT 'Morgan Freeman' WHERE NOT EXISTS (SELECT 1 FROM actores WHERE nombre = 'Morgan Freeman')
+SELECT 'Morgan Freeman', CURRENT_TIMESTAMP WHERE NOT EXISTS (SELECT 1 FROM actores WHERE nombre = 'Morgan Freeman')
 UNION ALL
-SELECT 'Samuel L. Jackson' WHERE NOT EXISTS (SELECT 1 FROM actores WHERE nombre = 'Samuel L. Jackson')
+SELECT 'Samuel L. Jackson', CURRENT_TIMESTAMP WHERE NOT EXISTS (SELECT 1 FROM actores WHERE nombre = 'Samuel L. Jackson')
 UNION ALL
-SELECT 'Natalie Portman' WHERE NOT EXISTS (SELECT 1 FROM actores WHERE nombre = 'Natalie Portman')
+SELECT 'Natalie Portman', CURRENT_TIMESTAMP WHERE NOT EXISTS (SELECT 1 FROM actores WHERE nombre = 'Natalie Portman')
 UNION ALL
-SELECT 'Christian Bale' WHERE NOT EXISTS (SELECT 1 FROM actores WHERE nombre = 'Christian Bale')
+SELECT 'Christian Bale', CURRENT_TIMESTAMP WHERE NOT EXISTS (SELECT 1 FROM actores WHERE nombre = 'Christian Bale')
 UNION ALL
-SELECT 'Anne Hathaway' WHERE NOT EXISTS (SELECT 1 FROM actores WHERE nombre = 'Anne Hathaway')
+SELECT 'Anne Hathaway', CURRENT_TIMESTAMP WHERE NOT EXISTS (SELECT 1 FROM actores WHERE nombre = 'Anne Hathaway')
 UNION ALL
-SELECT 'Ryan Gosling' WHERE NOT EXISTS (SELECT 1 FROM actores WHERE nombre = 'Ryan Gosling')
+SELECT 'Ryan Gosling', CURRENT_TIMESTAMP WHERE NOT EXISTS (SELECT 1 FROM actores WHERE nombre = 'Ryan Gosling')
 UNION ALL
-SELECT 'Emma Stone' WHERE NOT EXISTS (SELECT 1 FROM actores WHERE nombre = 'Emma Stone');
+SELECT 'Emma Stone', CURRENT_TIMESTAMP WHERE NOT EXISTS (SELECT 1 FROM actores WHERE nombre = 'Emma Stone');
 
 -- Inserción de películas (verificando existencia primero y convirtiendo fechas)
-INSERT INTO peliculas (titulo, fecha_salida, precio, condicion, formato, sinopsis, imagen_ampliada)
+INSERT INTO peliculas (titulo, fecha_salida, precio, condicion, formato, sinopsis, imagen_ampliada, last_update)
 SELECT
     'Inception',
     '2010-07-16'::DATE,
@@ -118,7 +118,8 @@ SELECT
     'Nuevo',
     'Blu-ray',
     'Un ladrón que roba secretos corporativos a través del uso de la tecnología de sueños compartidos tiene la tarea inversa de plantar una idea en la mente de un CEO.',
-    'https://image.tmdb.org/t/p/w500/9gk7adHYeDvHkCSEqAvQNLV5Uge.jpg'
+    'https://image.tmdb.org/t/p/w500/9gk7adHYeDvHkCSEqAvQNLV5Uge.jpg',
+    CURRENT_TIMESTAMP
 WHERE NOT EXISTS (SELECT 1 FROM peliculas WHERE titulo = 'Inception')
 UNION ALL
 SELECT
@@ -128,7 +129,8 @@ SELECT
     'Usado',
     'DVD',
     'Batman se enfrenta al Joker, un criminal que siembra el caos en Gotham City.',
-    'https://image.tmdb.org/t/p/w500/qJ2tW6WMUDux911r6m7haRef0WH.jpg'
+    'https://image.tmdb.org/t/p/w500/qJ2tW6WMUDux911r6m7haRef0WH.jpg',
+    CURRENT_TIMESTAMP
 WHERE NOT EXISTS (SELECT 1 FROM peliculas WHERE titulo = 'The Dark Knight')
 UNION ALL
 SELECT
@@ -138,7 +140,8 @@ SELECT
     'Usado',
     'DVD',
     'Las vidas de dos matones, un boxeador y una pareja de bandidos se entrelazan en cuatro historias de violencia y redención.',
-    'https://image.tmdb.org/t/p/w500/d5iIlFn5s0ImszYzBPb8JPIfbXD.jpg'
+    'https://image.tmdb.org/t/p/w500/d5iIlFn5s0ImszYzBPb8JPIfbXD.jpg',
+    CURRENT_TIMESTAMP
 WHERE NOT EXISTS (SELECT 1 FROM peliculas WHERE titulo = 'Pulp Fiction')
 UNION ALL
 SELECT
@@ -148,7 +151,8 @@ SELECT
     'Nuevo',
     'Blu-ray',
     'Un marine parapléjico es enviado a la luna Pandora en una misión única, pero se debate entre seguir órdenes y proteger el mundo que considera su hogar.',
-    'https://image.tmdb.org/t/p/w500/kyeqWdyUXW608qlYkRqosgbbJyK.jpg'
+    'https://image.tmdb.org/t/p/w500/kyeqWdyUXW608qlYkRqosgbbJyK.jpg',
+    CURRENT_TIMESTAMP
 WHERE NOT EXISTS (SELECT 1 FROM peliculas WHERE titulo = 'Avatar')
 UNION ALL
 SELECT
@@ -158,7 +162,8 @@ SELECT
     'Nuevo',
     'Blu-ray',
     'Durante su mudanza, una niña de 10 años se aventura en un mundo de dioses, brujas y espíritus, donde los humanos se convierten en bestias.',
-    'https://image.tmdb.org/t/p/w500/39wmItIWsg5sZMyRUHLkWBcuVCM.jpg'
+    'https://image.tmdb.org/t/p/w500/39wmItIWsg5sZMyRUHLkWBcuVCM.jpg',
+    CURRENT_TIMESTAMP
 WHERE NOT EXISTS (SELECT 1 FROM peliculas WHERE titulo = 'Spirited Away')
 UNION ALL
 SELECT
@@ -168,7 +173,8 @@ SELECT
     'Usado',
     'DVD',
     'El patriarca envejecido de una dinastía del crimen organizado transfiere el control de su imperio clandestino a su hijo reacio.',
-    'https://image.tmdb.org/t/p/w500/3bhkrj58Vtu7enYsRolD1fZdja1.jpg'
+    'https://image.tmdb.org/t/p/w500/3bhkrj58Vtu7enYsRolD1fZdja1.jpg',
+    CURRENT_TIMESTAMP
 WHERE NOT EXISTS (SELECT 1 FROM peliculas WHERE titulo = 'The Godfather')
 UNION ALL
 SELECT
@@ -178,7 +184,8 @@ SELECT
     'Usado',
     'DVD',
     'Las presidencias de Kennedy y Johnson, la guerra de Vietnam y otros eventos históricos se desarrollan desde la perspectiva de un hombre de Alabama.',
-    'https://image.tmdb.org/t/p/w500/arw2vcBveWOVZr6pxd9XTd1TdQa.jpg'
+    'https://image.tmdb.org/t/p/w500/arw2vcBveWOVZr6pxd9XTd1TdQa.jpg',
+    CURRENT_TIMESTAMP
 WHERE NOT EXISTS (SELECT 1 FROM peliculas WHERE titulo = 'Forrest Gump')
 UNION ALL
 SELECT
@@ -188,7 +195,8 @@ SELECT
     'Nuevo',
     'Blu-ray',
     'Un equipo de exploradores viaja a través de un agujero de gusano en el espacio en un intento por asegurar la supervivencia de la humanidad.',
-    'https://image.tmdb.org/t/p/w500/gEU2QniE6E77NI6lCU6MxlNBvIx.jpg'
+    'https://image.tmdb.org/t/p/w500/gEU2QniE6E77NI6lCU6MxlNBvIx.jpg',
+    CURRENT_TIMESTAMP
 WHERE NOT EXISTS (SELECT 1 FROM peliculas WHERE titulo = 'Interstellar')
 UNION ALL
 SELECT
@@ -198,7 +206,8 @@ SELECT
     'Usado',
     'DVD',
     'Dos hombres encarcelados se vinculan a lo largo de los años, encontrando consuelo y eventual redención a través de actos de decencia común.',
-    'https://image.tmdb.org/t/p/w500/hBcY0fEyRebn97iyjtVyYWo6QnO.jpg'
+    'https://image.tmdb.org/t/p/w500/hBcY0fEyRebn97iyjtVyYWo6QnO.jpg',
+    CURRENT_TIMESTAMP
 WHERE NOT EXISTS (SELECT 1 FROM peliculas WHERE titulo = 'The Shawshank Redemption')
 UNION ALL
 SELECT
@@ -208,7 +217,8 @@ SELECT
     'Nuevo',
     'Blu-ray',
     'Mientras buscan fama en la ciudad de Los Ángeles, un pianista de jazz y una actriz se enamoran mientras luchan por reconciliar sus aspiraciones artísticas.',
-    'https://image.tmdb.org/t/p/w500/uDO8zWDhfWwoFdKS4fzkUJt0Rf0.jpg'
+    'https://image.tmdb.org/t/p/w500/uDO8zWDhfWwoFdKS4fzkUJt0Rf0.jpg',
+    CURRENT_TIMESTAMP
 WHERE NOT EXISTS (SELECT 1 FROM peliculas WHERE titulo = 'La La Land')
 UNION ALL
 SELECT
@@ -218,7 +228,8 @@ SELECT
     'Usado',
     'DVD',
     'Un hacker se entera de la verdad sobre su realidad y su papel en la guerra contra sus controladores.',
-    'https://image.tmdb.org/t/p/w500/f89U3ADr1oiB1s9GkdPOEpXUk5H.jpg'
+    'https://image.tmdb.org/t/p/w500/f89U3ADr1oiB1s9GkdPOEpXUk5H.jpg',
+    CURRENT_TIMESTAMP
 WHERE NOT EXISTS (SELECT 1 FROM peliculas WHERE titulo = 'The Matrix')
 UNION ALL
 SELECT
@@ -228,7 +239,8 @@ SELECT
     'Usado',
     'DVD',
     'Una aristócrata de diecisiete años se enamora de un artista amable pero pobre a bordo del lujoso y desafortunado R.M.S. Titanic.',
-    'https://image.tmdb.org/t/p/w500/9xjZS2rlVxm8SFx8kPC3aIGCOYQ.jpg'
+    'https://image.tmdb.org/t/p/w500/9xjZS2rlVxm8SFx8kPC3aIGCOYQ.jpg',
+    CURRENT_TIMESTAMP
 WHERE NOT EXISTS (SELECT 1 FROM peliculas WHERE titulo = 'Titanic')
 UNION ALL
 SELECT
@@ -238,7 +250,8 @@ SELECT
     'Usado',
     'DVD',
     'Durante una visita previa a un parque temático, un empresario multimillonario, un pequeño grupo es atacado por dinosaurios clonados.',
-    'https://image.tmdb.org/t/p/w500/oU7Oq2kFAAlGqbU4VoAE36g4hoI.jpg'
+    'https://image.tmdb.org/t/p/w500/oU7Oq2kFAAlGqbU4VoAE36g4hoI.jpg',
+    CURRENT_TIMESTAMP
 WHERE NOT EXISTS (SELECT 1 FROM peliculas WHERE titulo = 'Jurassic Park')
 UNION ALL
 SELECT
@@ -248,7 +261,8 @@ SELECT
     'Nuevo',
     'Blu-ray',
     'T Challa, heredero del reino oculto de Wakanda, debe dar un paso adelante para liderar a su pueblo en un nuevo camino.',
-    'https://image.tmdb.org/t/p/w500/uxzzxijgPIY7slzFvMotPv8wjKA.jpg'
+    'https://image.tmdb.org/t/p/w500/uxzzxijgPIY7slzFvMotPv8wjKA.jpg',
+    CURRENT_TIMESTAMP
 WHERE NOT EXISTS (SELECT 1 FROM peliculas WHERE titulo = 'Black Panther')
 UNION ALL
 SELECT
@@ -258,7 +272,8 @@ SELECT
     'Usado',
     'DVD',
     'Una joven agente del FBI debe recibir la ayuda de un asesino en serie encarcelado y manipulador para ayudar a atrapar a otro asesino en serie.',
-    'https://image.tmdb.org/t/p/w500/uS9m8OBk1A8eM9I042bx8XXpqAq.jpg'
+    'https://image.tmdb.org/t/p/w500/uS9m8OBk1A8eM9I042bx8XXpqAq.jpg',
+    CURRENT_TIMESTAMP
 WHERE NOT EXISTS (SELECT 1 FROM peliculas WHERE titulo = 'The Silence of the Lambs');
 
 -- Ahora insertamos las relaciones usando subconsultas para obtener los IDs correctos

@@ -33,7 +33,7 @@ services:
       SPRING_RABBITMQ_PORT: 5672
       SPRING_RABBITMQ_USERNAME: guest
       SPRING_RABBITMQ_PASSWORD: guest
-      APP_RABBITMQ_EXCHANGE: peliculas.exchange
+      APP_RABBITMQ_EXCHANGE: pelicula_exchange
     depends_on:
       peliculas-db:
         condition: service_healthy
