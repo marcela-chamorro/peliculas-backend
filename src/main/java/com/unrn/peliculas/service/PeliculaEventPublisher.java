@@ -12,15 +12,23 @@ public class PeliculaEventPublisher {
     private final String exchangeName;
     private final String routingKey;
 
-    public PeliculaEventPublisher(RabbitTemplate rabbitTemplate,
-                                  @Value("${app.rabbitmq.exchange}") String exchangeName) {
+    public PeliculaEventPublisher(
+            RabbitTemplate rabbitTemplate,
+            @Value("${app.rabbitmq.exchange}") String exchangeName) {
+
         this.rabbitTemplate = rabbitTemplate;
         this.exchangeName = exchangeName;
-        this.routingKey = "pelicula.evento"; // Routing key que espera carrito
+        this.routingKey = "pelicula.event"; 
     }
 
     public void enviarEvento(Event<String, ?> evento) {
         rabbitTemplate.convertAndSend(exchangeName, routingKey, evento);
-        System.out.println("Evento publicado en " + exchangeName + " con routing key " + routingKey + ": " + evento.getEventType() + " para película " + evento.getKey());
+        System.out.println(
+                "Evento publicado en " + exchangeName +
+                " con routing key " + routingKey +
+                ": " + evento.getEventType() +
+                " para película " + evento.getKey()
+        );
     }
 }
+

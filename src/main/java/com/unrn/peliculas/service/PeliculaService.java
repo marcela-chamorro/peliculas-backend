@@ -44,11 +44,7 @@ public class PeliculaService {
     @Autowired
     private PeliculaEventPublisher eventPublisher;
 
-    // =======================
-    // Métodos CRUD existentes
-    // =======================
-
-    // Crear
+   
     public PeliculaDTO crearPelicula(PeliculaDTO dto) {
         Pelicula p = toEntity(dto);
         peliculaRepo.save(p);
@@ -64,7 +60,6 @@ public class PeliculaService {
         return toDTO(p);
     }
 
-    // Editar
     public PeliculaDTO editarPelicula(Integer id, PeliculaDTO dto) {
         Pelicula p = peliculaRepo.findById(id)
                 .orElseThrow(() -> new RuntimeException("Película no encontrada"));
@@ -113,14 +108,12 @@ public class PeliculaService {
         return toDTO(p);
     }
 
-    // Obtener detalle
     public PeliculaDTO obtenerDetallePelicula(Integer id) {
         Pelicula p = peliculaRepo.findByIdWithRelations(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Película no encontrada"));
         return toDTO(p);
     }
 
-    // Listar todas las películas
     public List<PeliculaDTO> listarTodasLasPeliculas() {
         return peliculaRepo.findAllWithRelations().stream()
                 .map(this::toDTOLista)
@@ -136,7 +129,6 @@ public class PeliculaService {
                 .collect(Collectors.toList());
     }
 
-    // Listar por género específico
     public List<PeliculaDTO> listarPorGenero(String genero) {
         return peliculaRepo.findByFiltros(null, genero, null, null, null, null, null)
                 .stream()
@@ -144,7 +136,6 @@ public class PeliculaService {
                 .collect(Collectors.toList());
     }
 
-    // Listar por director específico
     public List<PeliculaDTO> listarPorDirector(String director) {
         return peliculaRepo.findByFiltros(null, null, director, null, null, null, null)
                 .stream()
@@ -152,7 +143,6 @@ public class PeliculaService {
                 .collect(Collectors.toList());
     }
 
-    // Listar por actor específico
     public List<PeliculaDTO> listarPorActor(String actor) {
         return peliculaRepo.findByFiltros(null, null, null, actor, null, null, null)
                 .stream()
