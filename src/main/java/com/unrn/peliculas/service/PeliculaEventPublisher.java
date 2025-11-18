@@ -21,7 +21,7 @@ public class PeliculaEventPublisher {
         this.routingKey = "pelicula.event"; 
     }
 
-    public void enviarEvento(Event<String, ?> evento) {
+    public void enviarEvento(Event<Integer, ?> evento) {
         rabbitTemplate.convertAndSend(exchangeName, routingKey, evento);
         System.out.println(
                 "Evento publicado en " + exchangeName +

@@ -21,6 +21,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -50,9 +51,9 @@ public class PeliculaService {
         peliculaRepo.save(p);
         
         // Publicar evento CREATE vía RabbitMQ
-        Event<String, PeliculaSimplificada> evento = new Event<>(
+        Event<Integer, PeliculaSimplificada> evento = new Event<>(
             EventType.CREATE,
-            String.valueOf(p.getPeliculaId()),
+            p.getPeliculaId(),
             toPeliculaSimplificada(p)
         );
         eventPublisher.enviarEvento(evento);
@@ -95,12 +96,15 @@ public class PeliculaService {
                     .collect(Collectors.toSet()));
         }
 
+        // Actualizar automáticamente la fecha de última modificación
+        p.setLastUpdate(LocalDateTime.now());
+
         peliculaRepo.save(p);
         
         // Publicar evento UPDATE vía RabbitMQ
-        Event<String, PeliculaSimplificada> evento = new Event<>(
+        Event<Integer, PeliculaSimplificada> evento = new Event<>(
             EventType.UPDATE,
-            String.valueOf(p.getPeliculaId()),
+            p.getPeliculaId(),
             toPeliculaSimplificada(p)
         );
         eventPublisher.enviarEvento(evento);
@@ -254,13 +258,16 @@ public class PeliculaService {
                     .collect(Collectors.toSet()));
         }
 
+        // Establecer automáticamente la fecha de última modificación al crear
+        p.setLastUpdate(LocalDateTime.now());
+
         return p;
     }
 
     // Convertir Pelicula a PeliculaSimplificada para eventos RabbitMQ
     private PeliculaSimplificada toPeliculaSimplificada(Pelicula p) {
         return new PeliculaSimplificada(
-            String.valueOf(p.getPeliculaId()),
+            p.getPeliculaId(),
             p.getTitulo(),
             p.getFechaSalida(),
             p.getPrecio(),

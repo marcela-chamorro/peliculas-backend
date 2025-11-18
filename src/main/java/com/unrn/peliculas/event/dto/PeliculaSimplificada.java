@@ -16,7 +16,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 public class PeliculaSimplificada {
-    private String peliculaId; // String para coincidir con carrito
+    private Integer peliculaId;
     private String titulo;
     private LocalDate fechaSalida;
     private BigDecimal precio;
