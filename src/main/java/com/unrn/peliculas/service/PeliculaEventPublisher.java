@@ -14,11 +14,12 @@ public class PeliculaEventPublisher {
 
     public PeliculaEventPublisher(
             RabbitTemplate rabbitTemplate,
-            @Value("${app.rabbitmq.exchange}") String exchangeName) {
+            @Value("${app.rabbitmq.exchange}") String exchangeName,
+            @Value("${app.rabbitmq.routing.key}") String routingKey) {
 
         this.rabbitTemplate = rabbitTemplate;
         this.exchangeName = exchangeName;
-        this.routingKey = "pelicula.event"; 
+        this.routingKey = routingKey;
     }
 
     public void enviarEvento(Event<Integer, ?> evento) {
