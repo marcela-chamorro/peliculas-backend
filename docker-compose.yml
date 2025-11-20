@@ -1,9 +1,22 @@
 version: '3.8'
 
 services:
-  # Servicio para el microservicio de películas
+  #gateway:
+  #  image: hmunoz79/apigateway:1.5
+  #  container_name: api-gateway
+  #  extra_hosts:
+  #    - "host.docker.internal:host-gateway"
+  #  ports:
+  #    - "9600:9500"
+  #  environment:
+  #    SERVER_PORT: 9500
+  #  depends_on:
+  #    - peliculas-app
+  #  networks:
+  #    - backend
+
   peliculas-app:
-    build: .  # Utiliza el Dockerfile en el directorio actual
+    build: .
     container_name: peliculas-app-container
     ports:
       - "8080:8080"
@@ -11,21 +24,43 @@ services:
       SPRING_DATASOURCE_URL: jdbc:postgresql://peliculas-db:5432/peliculas_db
       SPRING_DATASOURCE_USERNAME: user_peliculas
       SPRING_DATASOURCE_PASSWORD: pass_peliculas
-    depends_on:
-      - peliculas-db
 
-  # Servicio para la base de datos de películas
+      SPRING_JPA_SHOW_SQL: "true"
+      SPRING_JPA_PROPERTIES_HIBERNATE_FORMAT_SQL: "true"
+      LOGGING_LEVEL_COM_UNRN_PELICULAS: "DEBUG"
+
+      SPRING_RABBITMQ_HOST: host.docker.internal
+      SPRING_RABBITMQ_PORT: 5672
+      SPRING_RABBITMQ_USERNAME: guest
+      SPRING_RABBITMQ_PASSWORD: guest
+      APP_RABBITMQ_EXCHANGE: pelicula_exchange
+    depends_on:
+      peliculas-db:
+        condition: service_healthy
+    networks:
+      - backend
+
   peliculas-db:
     image: postgres:13-alpine
     container_name: peliculas-db-container
-    ports:
-      - "5432:5432"
     environment:
       POSTGRES_DB: peliculas_db
       POSTGRES_USER: user_peliculas
       POSTGRES_PASSWORD: pass_peliculas
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U user_peliculas -d peliculas_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
     volumes:
       - peliculas-data:/var/lib/postgresql/data
+    networks:
+      - backend
 
 volumes:
   peliculas-data:
+
+networks:
+  backend:

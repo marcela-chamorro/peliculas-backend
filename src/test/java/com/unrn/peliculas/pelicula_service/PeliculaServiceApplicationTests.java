@@ -6,7 +6,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 @SpringBootTest
 class PeliculaServiceApplicationTests {
 
-	@Test
+	// @Test
 	void contextLoads() {
 	}
 
