@@ -102,4 +102,73 @@ class PeliculaControllerTest {
         mockMvc.perform(get("/peliculas/{id}", 99))
                 .andExpect(status().isInternalServerError());
     }
+
+    @Test
+    void testEditarPelicula() throws Exception {
+        // Arrange
+        PeliculaDTO inputDto = new PeliculaDTO();
+        inputDto.setTitulo("Inception (Updated)");
+        inputDto.setPrecio(new BigDecimal("1800.00"));
+
+        PeliculaDTO savedDto = new PeliculaDTO();
+        savedDto.setPeliculaId(1);
+        savedDto.setTitulo("Inception (Updated)");
+        savedDto.setPrecio(new BigDecimal("1800.00"));
+
+        when(peliculaService.editarPelicula(eq(1), any(PeliculaDTO.class))).thenReturn(savedDto);
+
+        // Act & Assert
+        mockMvc.perform(put("/peliculas/{id}", 1)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(inputDto)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.peliculaId").value(1))
+                .andExpect(jsonPath("$.titulo").value("Inception (Updated)"))
+                .andExpect(jsonPath("$.precio").value(1800.00));
+    }
+
+    @Test
+    void testListarPorGenero() throws Exception {
+        // Arrange
+        PeliculaDTO dto = new PeliculaDTO();
+        dto.setTitulo("Interstellar");
+
+        when(peliculaService.listarPorGenero("Sci-Fi")).thenReturn(Arrays.asList(dto));
+
+        // Act & Assert
+        mockMvc.perform(get("/peliculas/genero/{genero}", "Sci-Fi"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()").value(1))
+                .andExpect(jsonPath("$[0].titulo").value("Interstellar"));
+    }
+
+    @Test
+    void testListarPorDirector() throws Exception {
+        // Arrange
+        PeliculaDTO dto = new PeliculaDTO();
+        dto.setTitulo("Dunkirk");
+
+        when(peliculaService.listarPorDirector("Nolan")).thenReturn(Arrays.asList(dto));
+
+        // Act & Assert
+        mockMvc.perform(get("/peliculas/director/{director}", "Nolan"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()").value(1))
+                .andExpect(jsonPath("$[0].titulo").value("Dunkirk"));
+    }
+
+    @Test
+    void testListarPorActor() throws Exception {
+        // Arrange
+        PeliculaDTO dto = new PeliculaDTO();
+        dto.setTitulo("The Revenant");
+
+        when(peliculaService.listarPorActor("DiCaprio")).thenReturn(Arrays.asList(dto));
+
+        // Act & Assert
+        mockMvc.perform(get("/peliculas/actor/{actor}", "DiCaprio"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()").value(1))
+                .andExpect(jsonPath("$[0].titulo").value("The Revenant"));
+    }
 }
