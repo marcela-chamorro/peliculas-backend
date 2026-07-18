@@ -6,7 +6,10 @@ import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 
-@SpringBootTest
+@SpringBootTest(properties = {
+    "spring.datasource.url=jdbc:h2:mem:peliculas_test_db;DB_CLOSE_DELAY=-1;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE",
+    "spring.sql.init.mode=never"
+})
 class PeliculaServiceApplicationTests {
 
 	@MockBean
@@ -14,6 +17,9 @@ class PeliculaServiceApplicationTests {
 
 	@MockBean
 	private RabbitTemplate rabbitTemplate;
+
+	@MockBean
+	private org.springframework.security.oauth2.jwt.JwtDecoder jwtDecoder;
 
 	@Test
 	void contextLoads() {

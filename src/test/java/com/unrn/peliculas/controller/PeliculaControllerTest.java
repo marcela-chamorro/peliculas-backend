@@ -18,8 +18,25 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
+import org.springframework.boot.autoconfigure.security.servlet.UserDetailsServiceAutoConfiguration;
+import org.springframework.boot.autoconfigure.security.oauth2.resource.servlet.OAuth2ResourceServerAutoConfiguration;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.FilterType;
+import com.unrn.peliculas.config.SecurityConfig;
 
-@WebMvcTest(PeliculaController.class)
+@WebMvcTest(
+    controllers = PeliculaController.class,
+    excludeAutoConfiguration = {
+        SecurityAutoConfiguration.class,
+        UserDetailsServiceAutoConfiguration.class,
+        OAuth2ResourceServerAutoConfiguration.class
+    },
+    excludeFilters = @ComponentScan.Filter(
+        type = FilterType.ASSIGNABLE_TYPE,
+        classes = SecurityConfig.class
+    )
+)
 class PeliculaControllerTest {
 
     @Autowired
@@ -94,13 +111,14 @@ class PeliculaControllerTest {
 
     @Test
     void testObtenerDetallePelicula_NotFound() throws Exception {
-        // Arrange: Simulamos que el servicio lanza una excepción que en Spring suele mapearse a 404 (o lo manejamos por ExceptionHandler si existiera).
-        // Asumiendo que lanza RuntimeException por ahora
+        // Arrange: Simulamos que el servicio lanza una excepción que en Spring suele mapearse a 404
         when(peliculaService.obtenerDetallePelicula(99)).thenThrow(new RuntimeException("Película no encontrada"));
 
-        // Act & Assert: Normalmente devuelve 500 si no hay ControllerAdvice, pero evaluamos que devuelva error.
-        mockMvc.perform(get("/peliculas/{id}", 99))
-                .andExpect(status().isInternalServerError());
+        // Act & Assert: Verificamos que se lance la excepción cuando se realiza la petición
+        Exception exception = org.junit.jupiter.api.Assertions.assertThrows(Exception.class, () -> {
+            mockMvc.perform(get("/peliculas/{id}", 99));
+        });
+        org.junit.jupiter.api.Assertions.assertTrue(exception.getCause().getMessage().contains("Película no encontrada"));
     }
 
     @Test

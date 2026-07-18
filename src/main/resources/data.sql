@@ -1,19 +1,3 @@
-select * from actores;
-select * from directores;
-select * from generos;
-select * from pelicula_actores;
-select * from pelicula_directores;
-select * from pelicula_generos;
-select * from peliculas;
-
-truncate table actores cascade ;
-truncate table directores cascade ;
-truncate table generos cascade ;
-truncate table pelicula_actores cascade ;
-truncate table pelicula_directores cascade ;
-truncate table pelicula_generos cascade ;
-truncate table peliculas cascade;
-
 -- Script de inserción de datos para el sistema de películas con imágenes reales de TMDB
 -- Primero verificamos si los datos existen antes de insertar
 
@@ -129,7 +113,7 @@ SELECT
     'Usado',
     'DVD',
     'Batman se enfrenta al Joker, un criminal que siembra el caos en Gotham City.',
-    
+    'https://image.tmdb.org/t/p/w500/qJ2tWw3pmIM3zW688P7ziUIDu4s.jpg',
     CURRENT_TIMESTAMP
 WHERE NOT EXISTS (SELECT 1 FROM peliculas WHERE titulo = 'The Dark Knight')
 UNION ALL
@@ -282,7 +266,7 @@ INSERT INTO pelicula_directores (pelicula_id, director_id)
 SELECT p.pelicula_id, d.director_id
 FROM peliculas p
          CROSS JOIN directores d
-WHERE (p.titulo = 'Inception' AND d.nombre = 'Christopher Nolan')
+WHERE ((p.titulo = 'Inception' AND d.nombre = 'Christopher Nolan')
    OR (p.titulo = 'The Dark Knight' AND d.nombre = 'Christopher Nolan')
    OR (p.titulo = 'Pulp Fiction' AND d.nombre = 'Quentin Tarantino')
    OR (p.titulo = 'Avatar' AND d.nombre = 'James Cameron')
@@ -296,7 +280,7 @@ WHERE (p.titulo = 'Inception' AND d.nombre = 'Christopher Nolan')
    OR (p.titulo = 'Titanic' AND d.nombre = 'James Cameron')
    OR (p.titulo = 'Jurassic Park' AND d.nombre = 'Steven Spielberg')
    OR (p.titulo = 'Black Panther' AND d.nombre = 'Ryan Coogler')
-   OR (p.titulo = 'The Silence of the Lambs' AND d.nombre = 'Jonathan Demme')
+   OR (p.titulo = 'The Silence of the Lambs' AND d.nombre = 'Jonathan Demme'))
     AND NOT EXISTS (
         SELECT 1 FROM pelicula_directores pd
         WHERE pd.pelicula_id = p.pelicula_id AND pd.director_id = d.director_id
@@ -307,7 +291,7 @@ INSERT INTO pelicula_actores (pelicula_id, actor_id)
 SELECT p.pelicula_id, a.actor_id
 FROM peliculas p
          CROSS JOIN actores a
-WHERE (p.titulo = 'Inception' AND a.nombre IN ('Leonardo DiCaprio', 'Robert Downey Jr.', 'Samuel L. Jackson'))
+WHERE ((p.titulo = 'Inception' AND a.nombre IN ('Leonardo DiCaprio', 'Robert Downey Jr.', 'Samuel L. Jackson'))
    OR (p.titulo = 'The Dark Knight' AND a.nombre IN ('Christian Bale', 'Samuel L. Jackson', 'Anne Hathaway'))
    OR (p.titulo = 'Pulp Fiction' AND a.nombre IN ('Brad Pitt', 'Samuel L. Jackson', 'Natalie Portman'))
    OR (p.titulo = 'Avatar' AND a.nombre IN ('Leonardo DiCaprio', 'Scarlett Johansson', 'Denzel Washington'))
@@ -321,7 +305,7 @@ WHERE (p.titulo = 'Inception' AND a.nombre IN ('Leonardo DiCaprio', 'Robert Down
    OR (p.titulo = 'Titanic' AND a.nombre IN ('Leonardo DiCaprio', 'Scarlett Johansson', 'Jennifer Lawrence'))
    OR (p.titulo = 'Jurassic Park' AND a.nombre IN ('Tom Hanks', 'Meryl Streep', 'Morgan Freeman'))
    OR (p.titulo = 'Black Panther' AND a.nombre IN ('Denzel Washington', 'Samuel L. Jackson', 'Natalie Portman'))
-   OR (p.titulo = 'The Silence of the Lambs' AND a.nombre IN ('Meryl Streep', 'Brad Pitt', 'Morgan Freeman'))
+   OR (p.titulo = 'The Silence of the Lambs' AND a.nombre IN ('Meryl Streep', 'Brad Pitt', 'Morgan Freeman')))
     AND NOT EXISTS (
         SELECT 1 FROM pelicula_actores pa
         WHERE pa.pelicula_id = p.pelicula_id AND pa.actor_id = a.actor_id
@@ -332,7 +316,7 @@ INSERT INTO pelicula_generos (pelicula_id, genero_id)
 SELECT p.pelicula_id, g.genero_id
 FROM peliculas p
          CROSS JOIN generos g
-WHERE (p.titulo = 'Inception' AND g.nombre IN ('Ciencia Ficción', 'Drama', 'Suspenso'))
+WHERE ((p.titulo = 'Inception' AND g.nombre IN ('Ciencia Ficción', 'Drama', 'Suspenso'))
    OR (p.titulo = 'The Dark Knight' AND g.nombre IN ('Acción', 'Drama', 'Suspenso'))
    OR (p.titulo = 'Pulp Fiction' AND g.nombre IN ('Comedia', 'Drama', 'Crimen'))
    OR (p.titulo = 'Avatar' AND g.nombre IN ('Acción', 'Aventura', 'Ciencia Ficción'))
@@ -346,7 +330,7 @@ WHERE (p.titulo = 'Inception' AND g.nombre IN ('Ciencia Ficción', 'Drama', 'Sus
    OR (p.titulo = 'Titanic' AND g.nombre IN ('Romance', 'Drama', 'Aventura'))
    OR (p.titulo = 'Jurassic Park' AND g.nombre IN ('Acción', 'Aventura', 'Ciencia Ficción'))
    OR (p.titulo = 'Black Panther' AND g.nombre IN ('Acción', 'Aventura', 'Ciencia Ficción'))
-   OR (p.titulo = 'The Silence of the Lambs' AND g.nombre IN ('Suspenso', 'Crimen', 'Drama'))
+   OR (p.titulo = 'The Silence of the Lambs' AND g.nombre IN ('Suspenso', 'Crimen', 'Drama')))
     AND NOT EXISTS (
         SELECT 1 FROM pelicula_generos pg
         WHERE pg.pelicula_id = p.pelicula_id AND pg.genero_id = g.genero_id
