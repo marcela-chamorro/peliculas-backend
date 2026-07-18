@@ -6,11 +6,13 @@ on:
       - main
       - master
       - develop
+      - cicd-integracionkeycloak
   pull_request:
     branches:
       - main
       - master
       - develop
+      - cicd-integracionkeycloak
 
 jobs:
   build-and-test:
