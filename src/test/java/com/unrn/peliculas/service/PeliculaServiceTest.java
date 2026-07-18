@@ -143,6 +143,7 @@ class PeliculaServiceTest {
         when(actorRepo.findById(1)).thenReturn(Optional.of(actor));
         when(directorRepo.findById(1)).thenReturn(Optional.of(director));
         when(generoRepo.findById(1)).thenReturn(Optional.of(genero));
+        when(peliculaRepo.save(any(Pelicula.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
         PeliculaDTO result = peliculaService.editarPelicula(1, peliculaDTO);
 
