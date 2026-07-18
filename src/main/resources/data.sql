@@ -113,7 +113,7 @@ SELECT
     'Usado',
     'DVD',
     'Batman se enfrenta al Joker, un criminal que siembra el caos en Gotham City.',
-    'https://image.tmdb.org/t/p/w500/qJ2tWw3pmIM3zW688P7ziUIDu4s.jpg',
+    'https://image.tmdb.org/t/p/w500/qJ2tW6WMUDux911r6m7haRef0WH.jpg',
     CURRENT_TIMESTAMP
 WHERE NOT EXISTS (SELECT 1 FROM peliculas WHERE titulo = 'The Dark Knight')
 UNION ALL
