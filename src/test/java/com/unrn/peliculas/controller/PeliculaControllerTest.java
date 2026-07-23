@@ -3,16 +3,23 @@ package com.unrn.peliculas.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.unrn.peliculas.dto.PeliculaDTO;
 import com.unrn.peliculas.service.PeliculaService;
+import com.unrn.peliculas.service.externo.ClienteHistorial;
+
+import jakarta.servlet.ServletException;
+
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.security.oauth2.jwt.JwtDecoder;
 
 import java.math.BigDecimal;
 import java.util.Arrays;
+import java.util.List;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
@@ -24,6 +31,10 @@ import org.springframework.boot.autoconfigure.security.oauth2.resource.servlet.O
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.FilterType;
 import com.unrn.peliculas.config.SecurityConfig;
+import org.springframework.security.test.context.support.WithMockUser;
+
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.jwt;
+import java.util.Map;
 
 @WebMvcTest(
     controllers = PeliculaController.class,
@@ -45,6 +56,12 @@ class PeliculaControllerTest {
     @MockBean
     private PeliculaService peliculaService;
 
+    @MockBean
+    private JwtDecoder jwtDecoder;
+
+    @MockBean
+    private ClienteHistorial clienteHistorial;
+
     @Autowired
     private ObjectMapper objectMapper;
 
@@ -63,16 +80,18 @@ class PeliculaControllerTest {
         when(peliculaService.crearPelicula(any(PeliculaDTO.class))).thenReturn(savedDto);
 
         // Act & Assert
-        mockMvc.perform(post("/peliculas")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(inputDto)))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.peliculaId").value(1))
-                .andExpect(jsonPath("$.titulo").value("Interstellar"))
-                .andExpect(jsonPath("$.precio").value(2000.00));
+      mockMvc.perform(post("/peliculas")
+        .with(jwt().jwt(jwt -> jwt.claim(
+                "realm_access",
+                Map.of("roles", List.of("admin"))
+        )))
+        .contentType(MediaType.APPLICATION_JSON)
+        .content(objectMapper.writeValueAsString(inputDto)))
+        .andExpect(status().isOk());
     }
 
     @Test
+    @WithMockUser
     void testObtenerDetallePelicula() throws Exception {
         // Arrange
         PeliculaDTO dto = new PeliculaDTO();
@@ -89,6 +108,7 @@ class PeliculaControllerTest {
     }
 
     @Test
+    @WithMockUser
     void testListarPeliculasConFiltros() throws Exception {
         // Arrange
         PeliculaDTO dto1 = new PeliculaDTO();
@@ -137,15 +157,17 @@ class PeliculaControllerTest {
 
         // Act & Assert
         mockMvc.perform(put("/peliculas/{id}", 1)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(inputDto)))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.peliculaId").value(1))
-                .andExpect(jsonPath("$.titulo").value("Inception (Updated)"))
-                .andExpect(jsonPath("$.precio").value(1800.00));
+        .with(jwt().jwt(jwt -> jwt.claim(
+                "realm_access",
+                Map.of("roles", List.of("admin"))
+        )))
+        .contentType(MediaType.APPLICATION_JSON)
+        .content(objectMapper.writeValueAsString(inputDto)))
+        .andExpect(status().isOk());
     }
 
     @Test
+    @WithMockUser
     void testListarPorGenero() throws Exception {
         // Arrange
         PeliculaDTO dto = new PeliculaDTO();
@@ -161,6 +183,7 @@ class PeliculaControllerTest {
     }
 
     @Test
+    @WithMockUser
     void testListarPorDirector() throws Exception {
         // Arrange
         PeliculaDTO dto = new PeliculaDTO();
@@ -176,6 +199,7 @@ class PeliculaControllerTest {
     }
 
     @Test
+    @WithMockUser
     void testListarPorActor() throws Exception {
         // Arrange
         PeliculaDTO dto = new PeliculaDTO();

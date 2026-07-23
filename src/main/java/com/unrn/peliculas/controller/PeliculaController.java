@@ -1,10 +1,15 @@
 package com.unrn.peliculas.controller;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
-
+import com.unrn.peliculas.dto.VentaPorPeliculaDTO;
 import com.unrn.peliculas.dto.PeliculaDTO;
 import com.unrn.peliculas.service.PeliculaService;
+import com.unrn.peliculas.service.externo.ClienteHistorial;
+import com.unrn.peliculas.dto.ActualizarStockDTO;
+import com.unrn.peliculas.dto.DescuentoStockRequestDTO;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -12,8 +17,12 @@ import java.util.List;
 @RestController
 @RequestMapping("/peliculas")
 public class PeliculaController {
+
     @Autowired
-    PeliculaService peliculaService;
+    private PeliculaService peliculaService;
+
+    @Autowired
+    private ClienteHistorial clienteHistorial;
 
     @PostMapping
     public PeliculaDTO crear(@RequestBody PeliculaDTO dto) {
@@ -25,6 +34,32 @@ public class PeliculaController {
             @PathVariable Integer id,
             @RequestBody PeliculaDTO dto) {
         return peliculaService.editarPelicula(id, dto);
+    }
+
+    @GetMapping("/stock/test")
+    public ResponseEntity<List<VentaPorPeliculaDTO>> probarHistorial() {
+
+        return ResponseEntity.ok(
+                clienteHistorial.obtenerVentasPorPelicula());
+    }
+
+    @PutMapping("/descontar-stock")
+    public ResponseEntity<Void> descontarStock(
+            @RequestBody DescuentoStockRequestDTO request) {
+
+        peliculaService.descontarStock(request);
+
+        return ResponseEntity.ok().build();
+    }
+
+    @PutMapping("/{id}/stock")
+    public ResponseEntity<Void> actualizarStock(
+            @PathVariable Integer id,
+            @RequestBody ActualizarStockDTO dto) {
+
+        peliculaService.actualizarStock(id, dto.getStock());
+
+        return ResponseEntity.ok().build();
     }
 
     @GetMapping("/{id}")
@@ -41,7 +76,15 @@ public class PeliculaController {
             @RequestParam(required = false) Integer anio,
             @RequestParam(required = false) BigDecimal precioMax,
             @RequestParam(required = false) String formato) {
-        return peliculaService.listarPeliculasFiltradas(titulo, genero, director, actor, anio, precioMax, formato);
+
+        return peliculaService.listarPeliculasFiltradas(
+                titulo,
+                genero,
+                director,
+                actor,
+                anio,
+                precioMax,
+                formato);
     }
 
     @GetMapping("/genero/{genero}")

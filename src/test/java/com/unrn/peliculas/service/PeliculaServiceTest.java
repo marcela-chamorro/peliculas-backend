@@ -75,7 +75,8 @@ class PeliculaServiceTest {
         pelicula.setFechaSalida(LocalDate.of(2010, 7, 16));
         pelicula.setCondicion("Nuevo");
         pelicula.setFormato("Blu-Ray");
-        pelicula.setSinopsis("Un ladrón que roba secretos corporativos a través del uso de la tecnología de compartir sueños...");
+        pelicula.setSinopsis(
+                "Un ladrón que roba secretos corporativos a través del uso de la tecnología de compartir sueños...");
         pelicula.setImagenAmpliada("inception.jpg");
         pelicula.setLastUpdate(LocalDateTime.now());
         pelicula.getActores().add(actor);
@@ -89,18 +90,25 @@ class PeliculaServiceTest {
                 .fechaSalida(LocalDate.of(2010, 7, 16))
                 .condicion("Nuevo")
                 .formato("Blu-Ray")
-                .sinopsis("Un ladrón que roba secretos corporativos a través del uso de la tecnología de compartir sueños...")
+                .sinopsis(
+                        "Un ladrón que roba secretos corporativos a través del uso de la tecnología de compartir sueños...")
                 .imagenAmpliada("inception.jpg")
-                .actoresIds(List.of(1))
-                .directoresIds(List.of(1))
+                .director("Christopher Nolan")
+                .actores("Leonardo DiCaprio")
                 .generosIds(List.of(1))
                 .build();
     }
 
     @Test
     void testCrearPelicula_Success() {
-        when(actorRepo.findById(1)).thenReturn(Optional.of(actor));
-        when(directorRepo.findById(1)).thenReturn(Optional.of(director));
+        when(actorRepo.findByNombreIgnoreCase("Leonardo DiCaprio"))
+                .thenReturn(Optional.of(actor));
+
+        when(directorRepo.findByNombreIgnoreCase("Christopher Nolan"))
+                .thenReturn(Optional.of(director));
+
+        when(generoRepo.findById(1))
+                .thenReturn(Optional.of(genero));
         when(generoRepo.findById(1)).thenReturn(Optional.of(genero));
         when(peliculaRepo.save(any(Pelicula.class))).thenAnswer(invocation -> {
             Pelicula p = invocation.getArgument(0);
@@ -119,8 +127,8 @@ class PeliculaServiceTest {
 
     @Test
     void testCrearPelicula_SinRelaciones() {
-        peliculaDTO.setActoresIds(null);
-        peliculaDTO.setDirectoresIds(null);
+        peliculaDTO.setActores(null);
+        peliculaDTO.setDirector(null);
         peliculaDTO.setGenerosIds(null);
 
         when(peliculaRepo.save(any(Pelicula.class))).thenAnswer(invocation -> {
@@ -145,10 +153,25 @@ class PeliculaServiceTest {
         when(generoRepo.findById(1)).thenReturn(Optional.of(genero));
         when(peliculaRepo.save(any(Pelicula.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
+        when(actorRepo.findByNombreIgnoreCase("Leonardo DiCaprio"))
+                .thenReturn(Optional.of(actor));
+
+        when(directorRepo.findByNombreIgnoreCase("Christopher Nolan"))
+                .thenReturn(Optional.of(director));
+
+        when(generoRepo.findById(1))
+                .thenReturn(Optional.of(genero));
+
+        when(peliculaRepo.save(any(Pelicula.class)))
+                .thenReturn(pelicula);
+
+        // Act
         PeliculaDTO result = peliculaService.editarPelicula(1, peliculaDTO);
 
+        // Assert
         assertNotNull(result);
         assertEquals("Inception", result.getTitulo());
+
         verify(peliculaRepo, times(1)).save(any(Pelicula.class));
         verify(eventPublisher, times(1)).enviarEvento(any(Event.class));
     }
@@ -161,51 +184,36 @@ class PeliculaServiceTest {
     }
 
     @Test
-    void testEditarPelicula_ActorNoEncontrado() {
-        when(peliculaRepo.findById(1)).thenReturn(Optional.of(pelicula));
-        when(actorRepo.findById(1)).thenReturn(Optional.empty());
-
-        assertThrows(RuntimeException.class, () -> peliculaService.editarPelicula(1, peliculaDTO));
-    }
-
-    @Test
-    void testEditarPelicula_DirectorNoEncontrado() {
-        when(peliculaRepo.findById(1)).thenReturn(Optional.of(pelicula));
-        when(actorRepo.findById(1)).thenReturn(Optional.of(actor));
-        when(directorRepo.findById(1)).thenReturn(Optional.empty());
-
-        assertThrows(RuntimeException.class, () -> peliculaService.editarPelicula(1, peliculaDTO));
-    }
-
-    @Test
     void testEditarPelicula_GeneroNoEncontrado() {
-        when(peliculaRepo.findById(1)).thenReturn(Optional.of(pelicula));
-        when(actorRepo.findById(1)).thenReturn(Optional.of(actor));
-        when(directorRepo.findById(1)).thenReturn(Optional.of(director));
-        when(generoRepo.findById(1)).thenReturn(Optional.empty());
+        when(peliculaRepo.findById(1))
+                .thenReturn(Optional.of(pelicula));
 
-        assertThrows(RuntimeException.class, () -> peliculaService.editarPelicula(1, peliculaDTO));
-    }
+        when(actorRepo.findByNombreIgnoreCase("Leonardo DiCaprio"))
+                .thenReturn(Optional.of(actor));
 
-    @Test
-    void testCrearPelicula_ActorNoEncontrado() {
-        when(actorRepo.findById(1)).thenReturn(Optional.empty());
-        assertThrows(RuntimeException.class, () -> peliculaService.crearPelicula(peliculaDTO));
-    }
+        when(directorRepo.findByNombreIgnoreCase("Christopher Nolan"))
+                .thenReturn(Optional.of(director));
 
-    @Test
-    void testCrearPelicula_DirectorNoEncontrado() {
-        when(actorRepo.findById(1)).thenReturn(Optional.of(actor));
-        when(directorRepo.findById(1)).thenReturn(Optional.empty());
-        assertThrows(RuntimeException.class, () -> peliculaService.crearPelicula(peliculaDTO));
+        when(generoRepo.findById(1))
+                .thenReturn(Optional.empty());
+
+        assertThrows(RuntimeException.class,
+                () -> peliculaService.editarPelicula(1, peliculaDTO));
     }
 
     @Test
     void testCrearPelicula_GeneroNoEncontrado() {
-        when(actorRepo.findById(1)).thenReturn(Optional.of(actor));
-        when(directorRepo.findById(1)).thenReturn(Optional.of(director));
-        when(generoRepo.findById(1)).thenReturn(Optional.empty());
-        assertThrows(RuntimeException.class, () -> peliculaService.crearPelicula(peliculaDTO));
+        when(actorRepo.findByNombreIgnoreCase("Leonardo DiCaprio"))
+                .thenReturn(Optional.of(actor));
+
+        when(directorRepo.findByNombreIgnoreCase("Christopher Nolan"))
+                .thenReturn(Optional.of(director));
+
+        when(generoRepo.findById(1))
+                .thenReturn(Optional.empty());
+
+        assertThrows(RuntimeException.class,
+                () -> peliculaService.crearPelicula(peliculaDTO));
     }
 
     @Test
@@ -243,8 +251,8 @@ class PeliculaServiceTest {
                 .thenReturn(List.of(pelicula));
 
         List<PeliculaDTO> result = peliculaService.listarPeliculasFiltradas(
-                "Inception", "Ciencia Ficción", "Christopher Nolan", "Leonardo DiCaprio", 2010, new BigDecimal("20.00"), "Blu-Ray"
-        );
+                "Inception", "Ciencia Ficción", "Christopher Nolan", "Leonardo DiCaprio", 2010, new BigDecimal("20.00"),
+                "Blu-Ray");
 
         assertNotNull(result);
         assertEquals(1, result.size());
@@ -365,7 +373,8 @@ class PeliculaServiceTest {
     @Test
     void testToDTOLista_SinopsisLengthCheck() {
         // Sinopsis > 100 caracteres
-        pelicula.setSinopsis("Esta es una sinopsis muy larga diseñada específicamente para probar que el método de listado trunca el texto de manera correcta cuando supera los cien caracteres de longitud.");
+        pelicula.setSinopsis(
+                "Esta es una sinopsis muy larga diseñada específicamente para probar que el método de listado trunca el texto de manera correcta cuando supera los cien caracteres de longitud.");
         when(peliculaRepo.findAllWithRelations()).thenReturn(List.of(pelicula));
 
         List<PeliculaDTO> result = peliculaService.listarTodasLasPeliculas();

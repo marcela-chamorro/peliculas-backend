@@ -1,3 +1,19 @@
+--select * from actores;
+--select * from directores;
+--select * from generos;
+--select * from pelicula_actores;
+--select * from pelicula_directores;
+--select * from pelicula_generos;
+--select * from peliculas;
+
+--truncate table actores cascade ;
+--truncate table directores cascade ;
+--truncate table generos cascade ;
+--truncate table pelicula_actores cascade ;
+--truncate table pelicula_directores cascade ;
+--truncate table pelicula_generos cascade ;
+--truncate table peliculas cascade;
+
 -- Script de inserción de datos para el sistema de películas con imágenes reales de TMDB
 -- Primero verificamos si los datos existen antes de insertar
 

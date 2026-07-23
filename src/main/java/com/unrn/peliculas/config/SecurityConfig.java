@@ -27,18 +27,20 @@ public class SecurityConfig {
 
     @Bean
     public JwtDecoder jwtDecoder() {
-        NimbusJwtDecoder jwtDecoder = NimbusJwtDecoder.withJwkSetUri("http://keycloak:8080/realms/cinecloud/protocol/openid-connect/certs").build();
+        NimbusJwtDecoder jwtDecoder = NimbusJwtDecoder
+                .withJwkSetUri("http://keycloak:8080/realms/cinecloud/protocol/openid-connect/certs").build();
 
         OAuth2TokenValidator<Jwt> defaultValidators = JwtValidators.createDefault();
         OAuth2TokenValidator<Jwt> issuerValidator = new OAuth2TokenValidator<Jwt>() {
             @Override
             public OAuth2TokenValidatorResult validate(Jwt jwt) {
                 String issuer = jwt.getIssuer() != null ? jwt.getIssuer().toString() : "";
-                if (issuer.equals("http://localhost:9090/realms/cinecloud") || 
-                    issuer.equals("http://keycloak:8080/realms/cinecloud")) {
+                if (issuer.equals("http://localhost:9090/realms/cinecloud") ||
+                        issuer.equals("http://keycloak:8080/realms/cinecloud")) {
                     return OAuth2TokenValidatorResult.success();
                 }
-                return OAuth2TokenValidatorResult.failure(new OAuth2Error("invalid_issuer", "The issuer is not authorized: " + issuer, null));
+                return OAuth2TokenValidatorResult
+                        .failure(new OAuth2Error("invalid_issuer", "The issuer is not authorized: " + issuer, null));
             }
         };
 
@@ -46,22 +48,45 @@ public class SecurityConfig {
         return jwtDecoder;
     }
 
-     @Bean
+    @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-            .csrf(csrf -> csrf.disable())
-            .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-            .authorizeHttpRequests(auth -> auth
-                .requestMatchers(HttpMethod.GET, "/peliculas", "/peliculas/**").permitAll()
-                .requestMatchers("/public/**").permitAll()
-                .requestMatchers("/actuator/**").permitAll()
-                .requestMatchers("/error").permitAll()
-                .anyRequest().authenticated()
-            )
-            .oauth2ResourceServer(oauth2 -> oauth2.jwt())
-            .sessionManagement(session ->
-                session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-            );
+                .csrf(csrf -> csrf.disable())
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+                .authorizeHttpRequests(auth -> auth
+
+                        .requestMatchers(HttpMethod.POST, "/peliculas")
+                        .hasRole("admin")
+
+                        .requestMatchers(HttpMethod.PUT, "/peliculas/descontar-stock")
+                        .authenticated()
+
+                        .requestMatchers(HttpMethod.PUT, "/peliculas/**")
+                        .hasRole("admin")
+
+                        .requestMatchers(
+                                HttpMethod.GET,
+                                "/peliculas",
+                                "/peliculas/**",
+                                "/actores",
+                                "/directores",
+                                "/generos")
+                        .permitAll()
+
+                        .requestMatchers("/public/**")
+                        .permitAll()
+
+                        .requestMatchers("/actuator/**")
+                        .permitAll()
+
+                        .requestMatchers("/error")
+                        .permitAll()
+
+                        .anyRequest().authenticated())
+                .oauth2ResourceServer(oauth2 -> oauth2.jwt(jwt -> jwt.jwtAuthenticationConverter(
+                        new KeycloakJwtAuthenticationConverter())))
+                .sessionManagement(session -> session
+                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
         return http.build();
     }
@@ -70,9 +95,8 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowedOrigins(List.of(
-            "http://localhost:5173",
-            "http://localhost:3000"
-        ));
+                "http://localhost:5173",
+                "http://localhost:3000"));
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("*"));
         config.setAllowCredentials(true);
