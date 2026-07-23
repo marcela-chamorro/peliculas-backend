@@ -59,4 +59,34 @@ class PeliculaRepositoryTest {
         assertFalse(resultados.isEmpty(), "Debería encontrar al menos una película");
         assertEquals("The Matrix", resultados.get(0).getTitulo());
     }
+
+    @Test
+    void testOrdenamientoPorFechaSalida() {
+        // Arrange: Guardar película más vieja y más nueva
+        Pelicula vieja = new Pelicula();
+        vieja.setTitulo("Vieja");
+        vieja.setFechaSalida(LocalDate.of(1990, 1, 1));
+        vieja.setPrecio(new BigDecimal("100.00"));
+        vieja.setCondicion("Usado");
+        vieja.setFormato("VHS");
+        vieja.setLastUpdate(LocalDateTime.now());
+        peliculaRepository.save(vieja);
+
+        Pelicula nueva = new Pelicula();
+        nueva.setTitulo("Nueva");
+        nueva.setFechaSalida(LocalDate.of(2023, 1, 1));
+        nueva.setPrecio(new BigDecimal("500.00"));
+        nueva.setCondicion("Nuevo");
+        nueva.setFormato("Blu-Ray");
+        nueva.setLastUpdate(LocalDateTime.now());
+        peliculaRepository.save(nueva);
+
+        // Act
+        List<Pelicula> resultFiltros = peliculaRepository.findByFiltros(null, null, null, null, null, null, null);
+        List<Pelicula> resultAll = peliculaRepository.findAllWithRelations();
+
+        // Assert: La primera debe ser la más nueva (2023)
+        assertEquals("Nueva", resultFiltros.get(0).getTitulo());
+        assertEquals("Nueva", resultAll.get(0).getTitulo());
+    }
 }

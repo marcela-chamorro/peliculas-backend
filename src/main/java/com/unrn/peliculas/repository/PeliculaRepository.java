@@ -89,13 +89,14 @@ public interface PeliculaRepository extends JpaRepository<Pelicula, Integer>, Jp
             }
 
             query.distinct(true);
+            query.orderBy(criteriaBuilder.desc(root.get("fechaSalida")));
             return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
         });
     }
 
     // Mantener los otros métodos
     @EntityGraph(attributePaths = {"actores", "directores", "generos"})
-    @Query("SELECT p FROM Pelicula p")
+    @Query("SELECT p FROM Pelicula p ORDER BY p.fechaSalida DESC")
     List<Pelicula> findAllWithRelations();
 
     @EntityGraph(attributePaths = {"actores", "directores", "generos"})

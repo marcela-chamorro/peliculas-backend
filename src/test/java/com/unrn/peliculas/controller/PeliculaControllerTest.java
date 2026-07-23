@@ -94,12 +94,10 @@ class PeliculaControllerTest {
 
     @Test
     void testObtenerDetallePelicula_NotFound() throws Exception {
-        // Arrange: Simulamos que el servicio lanza una excepción que en Spring suele mapearse a 404 (o lo manejamos por ExceptionHandler si existiera).
-        // Asumiendo que lanza RuntimeException por ahora
-        when(peliculaService.obtenerDetallePelicula(99)).thenThrow(new RuntimeException("Película no encontrada"));
+        when(peliculaService.obtenerDetallePelicula(99))
+                .thenThrow(new org.springframework.web.server.ResponseStatusException(org.springframework.http.HttpStatus.NOT_FOUND, "Película no encontrada"));
 
-        // Act & Assert: Normalmente devuelve 500 si no hay ControllerAdvice, pero evaluamos que devuelva error.
         mockMvc.perform(get("/peliculas/{id}", 99))
-                .andExpect(status().isInternalServerError());
+                .andExpect(status().isNotFound());
     }
 }
