@@ -10,12 +10,41 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.oauth2.jwt.JwtDecoder;
+import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
+import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.security.oauth2.jwt.JwtValidators;
+import org.springframework.security.oauth2.core.DelegatingOAuth2TokenValidator;
+import org.springframework.security.oauth2.core.OAuth2TokenValidator;
+import org.springframework.security.oauth2.core.OAuth2TokenValidatorResult;
+import org.springframework.security.oauth2.core.OAuth2Error;
 
 import java.util.List;
 
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
+
+    @Bean
+    public JwtDecoder jwtDecoder() {
+        NimbusJwtDecoder jwtDecoder = NimbusJwtDecoder.withJwkSetUri("http://keycloak:8080/realms/cinecloud/protocol/openid-connect/certs").build();
+
+        OAuth2TokenValidator<Jwt> defaultValidators = JwtValidators.createDefault();
+        OAuth2TokenValidator<Jwt> issuerValidator = new OAuth2TokenValidator<Jwt>() {
+            @Override
+            public OAuth2TokenValidatorResult validate(Jwt jwt) {
+                String issuer = jwt.getIssuer() != null ? jwt.getIssuer().toString() : "";
+                if (issuer.equals("http://localhost:9090/realms/cinecloud") || 
+                    issuer.equals("http://keycloak:8080/realms/cinecloud")) {
+                    return OAuth2TokenValidatorResult.success();
+                }
+                return OAuth2TokenValidatorResult.failure(new OAuth2Error("invalid_issuer", "The issuer is not authorized: " + issuer, null));
+            }
+        };
+
+        jwtDecoder.setJwtValidator(new DelegatingOAuth2TokenValidator<>(defaultValidators, issuerValidator));
+        return jwtDecoder;
+    }
 
      @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
