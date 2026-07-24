@@ -424,7 +424,6 @@ public class PeliculaService {
     private PeliculaDTO toDTOLista(Pelicula pelicula) {
 
         return PeliculaDTO.builder()
-<<<<<<< HEAD
 
                 .peliculaId(pelicula.getPeliculaId())
                 .titulo(pelicula.getTitulo())

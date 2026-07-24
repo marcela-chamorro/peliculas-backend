@@ -31,9 +31,6 @@ public class Pelicula {
     @Column(nullable = false, precision = 10, scale = 2)
     private BigDecimal precio;
 
-    @Column
-    private Integer stock;
-
     @Column(nullable = false, length = 50)
     private String condicion;
 

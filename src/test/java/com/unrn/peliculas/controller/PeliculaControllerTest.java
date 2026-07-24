@@ -251,5 +251,4 @@ class PeliculaControllerTest {
                 .andExpect(jsonPath("$.peliculaId").value(1))
                 .andExpect(jsonPath("$.stock").value(15));
     }
-    }
 }
