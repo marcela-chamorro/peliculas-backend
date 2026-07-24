@@ -47,7 +47,7 @@ public class Pelicula {
     private Integer stock = 0;
 
     @Version
-    private Long version;
+    private Long version = 0L;
 
     @Column(name = "last_update", nullable = false)
     private LocalDateTime lastUpdate = LocalDateTime.now();
