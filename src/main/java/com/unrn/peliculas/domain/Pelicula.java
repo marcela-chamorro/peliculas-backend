@@ -46,6 +46,12 @@ public class Pelicula {
     @Column(name = "imagen_ampliada", length = 255)
     private String imagenAmpliada;
 
+    @Column(nullable = false)
+    private Integer stock = 0;
+
+    @Version
+    private Long version;
+
     @Column(name = "last_update", nullable = false)
     private LocalDateTime lastUpdate = LocalDateTime.now();
 

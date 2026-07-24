@@ -25,6 +25,7 @@ import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -53,6 +54,7 @@ class PeliculaServiceTest {
     private Actor actor;
     private Director director;
     private Genero genero;
+    private Pelicula peliculaTest;
 
     @BeforeEach
     void setUp() {
@@ -97,6 +99,19 @@ class PeliculaServiceTest {
                 .actores("Leonardo DiCaprio")
                 .generosIds(List.of(1))
                 .build();
+
+        peliculaTest = new Pelicula();
+        peliculaTest.setPeliculaId(1);
+        peliculaTest.setTitulo("Inception");
+        peliculaTest.setPrecio(new BigDecimal("1500.00"));
+        peliculaTest.setFechaSalida(LocalDate.of(2010, 7, 16));
+        peliculaTest.setCondicion("Nuevo");
+        peliculaTest.setFormato("Blu-Ray");
+        peliculaTest.setStock(10);
+        peliculaTest.setActores(new HashSet<>());
+        peliculaTest.setDirectores(new HashSet<>());
+        peliculaTest.setGeneros(new HashSet<>());
+        peliculaTest.setLastUpdate(LocalDateTime.now());
     }
 
     @Test
@@ -109,7 +124,6 @@ class PeliculaServiceTest {
 
         when(generoRepo.findById(1))
                 .thenReturn(Optional.of(genero));
-        when(generoRepo.findById(1)).thenReturn(Optional.of(genero));
         when(peliculaRepo.save(any(Pelicula.class))).thenAnswer(invocation -> {
             Pelicula p = invocation.getArgument(0);
             p.setPeliculaId(1);
@@ -148,10 +162,6 @@ class PeliculaServiceTest {
     @Test
     void testEditarPelicula_Success() {
         when(peliculaRepo.findById(1)).thenReturn(Optional.of(pelicula));
-        when(actorRepo.findById(1)).thenReturn(Optional.of(actor));
-        when(directorRepo.findById(1)).thenReturn(Optional.of(director));
-        when(generoRepo.findById(1)).thenReturn(Optional.of(genero));
-        when(peliculaRepo.save(any(Pelicula.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
         when(actorRepo.findByNombreIgnoreCase("Leonardo DiCaprio"))
                 .thenReturn(Optional.of(actor));
@@ -391,5 +401,61 @@ class PeliculaServiceTest {
         pelicula.setSinopsis(null);
         result = peliculaService.listarTodasLasPeliculas();
         assertNull(result.get(0).getSinopsis());
+    }
+
+    @Test
+    void testConsultarStock_Exitoso() {
+        when(peliculaRepo.findById(1)).thenReturn(Optional.of(peliculaTest));
+
+        Integer stock = peliculaService.consultarStock(1);
+
+        assertEquals(10, stock);
+        verify(peliculaRepo, times(1)).findById(1);
+    }
+
+    @Test
+    void testDescontarStock_Exitoso() {
+        when(peliculaRepo.descontarStockConcurrente(1, 2)).thenReturn(1);
+        when(peliculaRepo.findByIdWithRelations(1)).thenReturn(Optional.of(peliculaTest));
+
+        PeliculaDTO resultado = peliculaService.descontarStock(1, 2);
+
+        assertNotNull(resultado);
+        assertEquals("Inception", resultado.getTitulo());
+        verify(peliculaRepo, times(1)).descontarStockConcurrente(1, 2);
+        verify(eventPublisher, times(1)).enviarEvento(any());
+    }
+
+    @Test
+    void testDescontarStock_SinStockSuficiente_LanzaExcepcion() {
+        when(peliculaRepo.descontarStockConcurrente(1, 20)).thenReturn(0);
+        when(peliculaRepo.findById(1)).thenReturn(Optional.of(peliculaTest));
+
+        ResponseStatusException ex = assertThrows(ResponseStatusException.class, () -> {
+            peliculaService.descontarStock(1, 20);
+        });
+
+        assertTrue(ex.getReason().contains("Stock insuficiente"));
+        verify(eventPublisher, never()).enviarEvento(any());
+    }
+
+    @Test
+    void testDescontarStock_CantidadInvalida_LanzaExcepcion() {
+        assertThrows(ResponseStatusException.class, () -> {
+            peliculaService.descontarStock(1, 0);
+        });
+    }
+
+    @Test
+    void testReponerStock_Exitoso() {
+        when(peliculaRepo.findByIdWithLock(1)).thenReturn(Optional.of(peliculaTest));
+        when(peliculaRepo.save(any(Pelicula.class))).thenReturn(peliculaTest);
+
+        PeliculaDTO resultado = peliculaService.reponerStock(1, 5);
+
+        assertNotNull(resultado);
+        assertEquals(15, peliculaTest.getStock());
+        verify(peliculaRepo, times(1)).save(peliculaTest);
+        verify(eventPublisher, times(1)).enviarEvento(any());
     }
 }

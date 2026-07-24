@@ -101,4 +101,23 @@ public class PeliculaController {
     public List<PeliculaDTO> listarPorActor(@PathVariable String actor) {
         return peliculaService.listarPorActor(actor);
     }
+
+    @GetMapping("/{id}/stock")
+    public Integer consultarStock(@PathVariable Integer id) {
+        return peliculaService.consultarStock(id);
+    }
+
+    @PostMapping("/{id}/descontar-stock")
+    public PeliculaDTO descontarStock(
+            @PathVariable Integer id,
+            @RequestParam(defaultValue = "1") Integer cantidad) {
+        return peliculaService.descontarStock(id, cantidad);
+    }
+
+    @PostMapping("/{id}/reponer-stock")
+    public PeliculaDTO reponerStock(
+            @PathVariable Integer id,
+            @RequestParam(defaultValue = "1") Integer cantidad) {
+        return peliculaService.reponerStock(id, cantidad);
+    }
 }

@@ -298,7 +298,69 @@ public class PeliculaService {
                 .collect(Collectors.toList());
     }
 
-        // =======================
+    // =======================
+    // Métodos de Gestión y Control de Stock (RF-15 Concurrencia)
+    // =======================
+
+    public Integer consultarStock(Integer id) {
+        Pelicula p = peliculaRepo.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Película no encontrada"));
+        return p.getStock();
+    }
+
+    public PeliculaDTO descontarStock(Integer id, Integer cantidad) {
+        if (cantidad == null || cantidad <= 0) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "La cantidad a descontar debe ser mayor a 0");
+        }
+
+        // Intento de actualización atómica directa a nivel SQL para mayor eficiencia y seguridad bajo concurrencia
+        int filasAfectadas = peliculaRepo.descontarStockConcurrente(id, cantidad);
+        if (filasAfectadas == 0) {
+            // Verificar si la película no existe o si no hay stock suficiente
+            Pelicula p = peliculaRepo.findById(id)
+                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Película no encontrada"));
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                    "Stock insuficiente para la película '" + p.getTitulo() + "'. Stock disponible: " + p.getStock());
+        }
+
+        Pelicula p = peliculaRepo.findByIdWithRelations(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Película no encontrada"));
+
+        // Publicar evento UPDATE con el stock actualizado
+        Event<Integer, PeliculaSimplificada> evento = new Event<>(
+            EventType.UPDATE,
+            p.getPeliculaId(),
+            toPeliculaSimplificada(p)
+        );
+        eventPublisher.enviarEvento(evento);
+
+        return toDTO(p);
+    }
+
+    public PeliculaDTO reponerStock(Integer id, Integer cantidad) {
+        if (cantidad == null || cantidad <= 0) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "La cantidad a reponer debe ser mayor a 0");
+        }
+
+        Pelicula p = peliculaRepo.findByIdWithLock(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Película no encontrada"));
+
+        p.setStock((p.getStock() != null ? p.getStock() : 0) + cantidad);
+        p.setLastUpdate(LocalDateTime.now());
+        peliculaRepo.save(p);
+
+        // Publicar evento UPDATE con el stock actualizado
+        Event<Integer, PeliculaSimplificada> evento = new Event<>(
+            EventType.UPDATE,
+            p.getPeliculaId(),
+            toPeliculaSimplificada(p)
+        );
+        eventPublisher.enviarEvento(evento);
+
+        return toDTO(p);
+    }
+
+    // =======================
     // Métodos privados de conversión
     // =======================
 
@@ -356,13 +418,13 @@ public class PeliculaService {
                                                 .build())
                                 .collect(Collectors.toList())
                 )
-
                 .build();
     }
 
     private PeliculaDTO toDTOLista(Pelicula pelicula) {
 
         return PeliculaDTO.builder()
+<<<<<<< HEAD
 
                 .peliculaId(pelicula.getPeliculaId())
                 .titulo(pelicula.getTitulo())
@@ -517,7 +579,9 @@ public class PeliculaService {
                 pelicula.getFormato(),
                 pelicula.getSinopsis(),
                 pelicula.getImagenAmpliada(),
-                pelicula.getLastUpdate());
+                pelicula.getStock(),
+                pelicula.getLastUpdate()
+        );
     }
 
 }

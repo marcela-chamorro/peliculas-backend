@@ -1,19 +1,3 @@
---select * from actores;
---select * from directores;
---select * from generos;
---select * from pelicula_actores;
---select * from pelicula_directores;
---select * from pelicula_generos;
---select * from peliculas;
-
---truncate table actores cascade ;
---truncate table directores cascade ;
---truncate table generos cascade ;
---truncate table pelicula_actores cascade ;
---truncate table pelicula_directores cascade ;
---truncate table pelicula_generos cascade ;
---truncate table peliculas cascade;
-
 -- Script de inserción de datos para el sistema de películas con imágenes reales de TMDB
 -- Primero verificamos si los datos existen antes de insertar
 
@@ -110,169 +94,184 @@ UNION ALL
 SELECT 'Emma Stone', CURRENT_TIMESTAMP WHERE NOT EXISTS (SELECT 1 FROM actores WHERE nombre = 'Emma Stone');
 
 -- Inserción de películas (verificando existencia primero y convirtiendo fechas)
-INSERT INTO peliculas (titulo, fecha_salida, precio, condicion, formato, sinopsis, imagen_ampliada, last_update)
+INSERT INTO peliculas (titulo, fecha_salida, precio, condicion, formato, sinopsis, imagen_ampliada, stock, last_update)
 SELECT
     'Inception',
-    '2010-07-16'::DATE,
+    '2010-07-16',
     15.99,
     'Nuevo',
     'Blu-ray',
     'Un ladrón que roba secretos corporativos a través del uso de la tecnología de sueños compartidos tiene la tarea inversa de plantar una idea en la mente de un CEO.',
     'https://image.tmdb.org/t/p/w500/9gk7adHYeDvHkCSEqAvQNLV5Uge.jpg',
+    10,
     CURRENT_TIMESTAMP
 WHERE NOT EXISTS (SELECT 1 FROM peliculas WHERE titulo = 'Inception')
 UNION ALL
 SELECT
     'The Dark Knight',
-    '2008-07-18'::DATE,
+    '2008-07-18',
     12.50,
     'Usado',
     'DVD',
     'Batman se enfrenta al Joker, un criminal que siembra el caos en Gotham City.',
     'https://image.tmdb.org/t/p/w500/qJ2tW6WMUDux911r6m7haRef0WH.jpg',
+    10,
     CURRENT_TIMESTAMP
 WHERE NOT EXISTS (SELECT 1 FROM peliculas WHERE titulo = 'The Dark Knight')
 UNION ALL
 SELECT
     'Pulp Fiction',
-    '1994-10-14'::DATE,
+    '1994-10-14',
     9.99,
     'Usado',
     'DVD',
     'Las vidas de dos matones, un boxeador y una pareja de bandidos se entrelazan en cuatro historias de violencia y redención.',
     'https://image.tmdb.org/t/p/w500/d5iIlFn5s0ImszYzBPb8JPIfbXD.jpg',
+    10,
     CURRENT_TIMESTAMP
 WHERE NOT EXISTS (SELECT 1 FROM peliculas WHERE titulo = 'Pulp Fiction')
 UNION ALL
 SELECT
     'Avatar',
-    '2009-12-18'::DATE,
+    '2009-12-18',
     18.75,
     'Nuevo',
     'Blu-ray',
     'Un marine parapléjico es enviado a la luna Pandora en una misión única, pero se debate entre seguir órdenes y proteger el mundo que considera su hogar.',
     'https://image.tmdb.org/t/p/w500/kyeqWdyUXW608qlYkRqosgbbJyK.jpg',
+    10,
     CURRENT_TIMESTAMP
 WHERE NOT EXISTS (SELECT 1 FROM peliculas WHERE titulo = 'Avatar')
 UNION ALL
 SELECT
     'Spirited Away',
-    '2001-07-20'::DATE,
+    '2001-07-20',
     14.25,
     'Nuevo',
     'Blu-ray',
     'Durante su mudanza, una niña de 10 años se aventura en un mundo de dioses, brujas y espíritus, donde los humanos se convierten en bestias.',
     'https://image.tmdb.org/t/p/w500/39wmItIWsg5sZMyRUHLkWBcuVCM.jpg',
+    10,
     CURRENT_TIMESTAMP
 WHERE NOT EXISTS (SELECT 1 FROM peliculas WHERE titulo = 'Spirited Away')
 UNION ALL
 SELECT
     'The Godfather',
-    '1972-03-24'::DATE,
+    '1972-03-24',
     8.99,
     'Usado',
     'DVD',
     'El patriarca envejecido de una dinastía del crimen organizado transfiere el control de su imperio clandestino a su hijo reacio.',
     'https://image.tmdb.org/t/p/w500/3bhkrj58Vtu7enYsRolD1fZdja1.jpg',
+    10,
     CURRENT_TIMESTAMP
 WHERE NOT EXISTS (SELECT 1 FROM peliculas WHERE titulo = 'The Godfather')
 UNION ALL
 SELECT
     'Forrest Gump',
-    '1994-07-06'::DATE,
+    '1994-07-06',
     11.25,
     'Usado',
     'DVD',
     'Las presidencias de Kennedy y Johnson, la guerra de Vietnam y otros eventos históricos se desarrollan desde la perspectiva de un hombre de Alabama.',
     'https://image.tmdb.org/t/p/w500/arw2vcBveWOVZr6pxd9XTd1TdQa.jpg',
+    10,
     CURRENT_TIMESTAMP
 WHERE NOT EXISTS (SELECT 1 FROM peliculas WHERE titulo = 'Forrest Gump')
 UNION ALL
 SELECT
     'Interstellar',
-    '2014-11-07'::DATE,
+    '2014-11-07',
     16.50,
     'Nuevo',
     'Blu-ray',
     'Un equipo de exploradores viaja a través de un agujero de gusano en el espacio en un intento por asegurar la supervivencia de la humanidad.',
     'https://image.tmdb.org/t/p/w500/gEU2QniE6E77NI6lCU6MxlNBvIx.jpg',
+    10,
     CURRENT_TIMESTAMP
 WHERE NOT EXISTS (SELECT 1 FROM peliculas WHERE titulo = 'Interstellar')
 UNION ALL
 SELECT
     'The Shawshank Redemption',
-    '1994-10-14'::DATE,
+    '1994-10-14',
     7.99,
     'Usado',
     'DVD',
     'Dos hombres encarcelados se vinculan a lo largo de los años, encontrando consuelo y eventual redención a través de actos de decencia común.',
     'https://image.tmdb.org/t/p/w500/hBcY0fEyRebn97iyjtVyYWo6QnO.jpg',
+    10,
     CURRENT_TIMESTAMP
 WHERE NOT EXISTS (SELECT 1 FROM peliculas WHERE titulo = 'The Shawshank Redemption')
 UNION ALL
 SELECT
     'La La Land',
-    '2016-12-09'::DATE,
+    '2016-12-09',
     13.75,
     'Nuevo',
     'Blu-ray',
     'Mientras buscan fama en la ciudad de Los Ángeles, un pianista de jazz y una actriz se enamoran mientras luchan por reconciliar sus aspiraciones artísticas.',
     'https://image.tmdb.org/t/p/w500/uDO8zWDhfWwoFdKS4fzkUJt0Rf0.jpg',
+    10,
     CURRENT_TIMESTAMP
 WHERE NOT EXISTS (SELECT 1 FROM peliculas WHERE titulo = 'La La Land')
 UNION ALL
 SELECT
     'The Matrix',
-    '1999-03-31'::DATE,
+    '1999-03-31',
     10.99,
     'Usado',
     'DVD',
     'Un hacker se entera de la verdad sobre su realidad y su papel en la guerra contra sus controladores.',
     'https://image.tmdb.org/t/p/w500/f89U3ADr1oiB1s9GkdPOEpXUk5H.jpg',
+    10,
     CURRENT_TIMESTAMP
 WHERE NOT EXISTS (SELECT 1 FROM peliculas WHERE titulo = 'The Matrix')
 UNION ALL
 SELECT
     'Titanic',
-    '1997-12-19'::DATE,
+    '1997-12-19',
     9.50,
     'Usado',
     'DVD',
     'Una aristócrata de diecisiete años se enamora de un artista amable pero pobre a bordo del lujoso y desafortunado R.M.S. Titanic.',
     'https://image.tmdb.org/t/p/w500/9xjZS2rlVxm8SFx8kPC3aIGCOYQ.jpg',
+    10,
     CURRENT_TIMESTAMP
 WHERE NOT EXISTS (SELECT 1 FROM peliculas WHERE titulo = 'Titanic')
 UNION ALL
 SELECT
     'Jurassic Park',
-    '1993-06-11'::DATE,
+    '1993-06-11',
     12.25,
     'Usado',
     'DVD',
     'Durante una visita previa a un parque temático, un empresario multimillonario, un pequeño grupo es atacado por dinosaurios clonados.',
     'https://image.tmdb.org/t/p/w500/oU7Oq2kFAAlGqbU4VoAE36g4hoI.jpg',
+    10,
     CURRENT_TIMESTAMP
 WHERE NOT EXISTS (SELECT 1 FROM peliculas WHERE titulo = 'Jurassic Park')
 UNION ALL
 SELECT
     'Black Panther',
-    '2018-02-16'::DATE,
+    '2018-02-16',
     17.25,
     'Nuevo',
     'Blu-ray',
     'T Challa, heredero del reino oculto de Wakanda, debe dar un paso adelante para liderar a su pueblo en un nuevo camino.',
     'https://image.tmdb.org/t/p/w500/uxzzxijgPIY7slzFvMotPv8wjKA.jpg',
+    10,
     CURRENT_TIMESTAMP
 WHERE NOT EXISTS (SELECT 1 FROM peliculas WHERE titulo = 'Black Panther')
 UNION ALL
 SELECT
     'The Silence of the Lambs',
-    '1991-02-14'::DATE,
+    '1991-02-14',
     8.25,
     'Usado',
     'DVD',
     'Una joven agente del FBI debe recibir la ayuda de un asesino en serie encarcelado y manipulador para ayudar a atrapar a otro asesino en serie.',
     'https://image.tmdb.org/t/p/w500/uS9m8OBk1A8eM9I042bx8XXpqAq.jpg',
+    10,
     CURRENT_TIMESTAMP
 WHERE NOT EXISTS (SELECT 1 FROM peliculas WHERE titulo = 'The Silence of the Lambs');
 
