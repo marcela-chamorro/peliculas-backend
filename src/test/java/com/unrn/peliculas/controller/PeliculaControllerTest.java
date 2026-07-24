@@ -100,4 +100,45 @@ class PeliculaControllerTest {
         mockMvc.perform(get("/peliculas/{id}", 99))
                 .andExpect(status().isNotFound());
     }
+
+    @Test
+    void testConsultarStock() throws Exception {
+        when(peliculaService.consultarStock(1)).thenReturn(10);
+
+        mockMvc.perform(get("/peliculas/{id}/stock", 1))
+                .andExpect(status().isOk())
+                .andExpect(content().string("10"));
+    }
+
+    @Test
+    void testDescontarStock() throws Exception {
+        PeliculaDTO dto = new PeliculaDTO();
+        dto.setPeliculaId(1);
+        dto.setTitulo("Inception");
+        dto.setStock(8);
+
+        when(peliculaService.descontarStock(1, 2)).thenReturn(dto);
+
+        mockMvc.perform(post("/peliculas/{id}/descontar-stock", 1)
+                .param("cantidad", "2"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.peliculaId").value(1))
+                .andExpect(jsonPath("$.stock").value(8));
+    }
+
+    @Test
+    void testReponerStock() throws Exception {
+        PeliculaDTO dto = new PeliculaDTO();
+        dto.setPeliculaId(1);
+        dto.setTitulo("Inception");
+        dto.setStock(15);
+
+        when(peliculaService.reponerStock(1, 5)).thenReturn(dto);
+
+        mockMvc.perform(post("/peliculas/{id}/reponer-stock", 1)
+                .param("cantidad", "5"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.peliculaId").value(1))
+                .andExpect(jsonPath("$.stock").value(15));
+    }
 }

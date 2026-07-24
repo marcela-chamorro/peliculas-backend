@@ -24,6 +24,7 @@ public class PeliculaDTO {
     private String formato;
     private String sinopsis;
     private String imagenAmpliada;
+    private Integer stock;
 
     // Para crear/editar: se envían IDs
     private List<Integer> actoresIds;

@@ -73,6 +73,9 @@ public class PeliculaService {
         p.setFormato(dto.getFormato());
         p.setSinopsis(dto.getSinopsis());
         p.setImagenAmpliada(dto.getImagenAmpliada());
+        if (dto.getStock() != null) {
+            p.setStock(dto.getStock());
+        }
 
         // actualizar relaciones
         if(dto.getActoresIds() != null) {
@@ -186,6 +189,68 @@ public class PeliculaService {
     }
 
     // =======================
+    // Métodos de Gestión y Control de Stock (RF-15 Concurrencia)
+    // =======================
+
+    public Integer consultarStock(Integer id) {
+        Pelicula p = peliculaRepo.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Película no encontrada"));
+        return p.getStock();
+    }
+
+    public PeliculaDTO descontarStock(Integer id, Integer cantidad) {
+        if (cantidad == null || cantidad <= 0) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "La cantidad a descontar debe ser mayor a 0");
+        }
+
+        // Intento de actualización atómica directa a nivel SQL para mayor eficiencia y seguridad bajo concurrencia
+        int filasAfectadas = peliculaRepo.descontarStockConcurrente(id, cantidad);
+        if (filasAfectadas == 0) {
+            // Verificar si la película no existe o si no hay stock suficiente
+            Pelicula p = peliculaRepo.findById(id)
+                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Película no encontrada"));
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                    "Stock insuficiente para la película '" + p.getTitulo() + "'. Stock disponible: " + p.getStock());
+        }
+
+        Pelicula p = peliculaRepo.findByIdWithRelations(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Película no encontrada"));
+
+        // Publicar evento UPDATE con el stock actualizado
+        Event<Integer, PeliculaSimplificada> evento = new Event<>(
+            EventType.UPDATE,
+            p.getPeliculaId(),
+            toPeliculaSimplificada(p)
+        );
+        eventPublisher.enviarEvento(evento);
+
+        return toDTO(p);
+    }
+
+    public PeliculaDTO reponerStock(Integer id, Integer cantidad) {
+        if (cantidad == null || cantidad <= 0) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "La cantidad a reponer debe ser mayor a 0");
+        }
+
+        Pelicula p = peliculaRepo.findByIdWithLock(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Película no encontrada"));
+
+        p.setStock((p.getStock() != null ? p.getStock() : 0) + cantidad);
+        p.setLastUpdate(LocalDateTime.now());
+        peliculaRepo.save(p);
+
+        // Publicar evento UPDATE con el stock actualizado
+        Event<Integer, PeliculaSimplificada> evento = new Event<>(
+            EventType.UPDATE,
+            p.getPeliculaId(),
+            toPeliculaSimplificada(p)
+        );
+        eventPublisher.enviarEvento(evento);
+
+        return toDTO(p);
+    }
+
+    // =======================
     // Métodos privados de conversión
     // =======================
 
@@ -200,6 +265,7 @@ public class PeliculaService {
                 .formato(p.getFormato())
                 .sinopsis(p.getSinopsis())
                 .imagenAmpliada(p.getImagenAmpliada())
+                .stock(p.getStock())
                 // Devolver nombres para detalle
                 .actores(p.getActores().stream().map(Actor::getNombre).collect(Collectors.toList()))
                 .directores(p.getDirectores().stream().map(Director::getNombre).collect(Collectors.toList()))
@@ -219,6 +285,7 @@ public class PeliculaService {
                 .sinopsis(p.getSinopsis() != null && p.getSinopsis().length() > 100 ?
                         p.getSinopsis().substring(0, 100) + "..." : p.getSinopsis())
                 .imagenAmpliada(p.getImagenAmpliada())
+                .stock(p.getStock())
                 // Solo primeros elementos para listas
                 .actores(p.getActores().stream().limit(3).map(Actor::getNombre).collect(Collectors.toList()))
                 .directores(p.getDirectores().stream().limit(2).map(Director::getNombre).collect(Collectors.toList()))
@@ -235,6 +302,7 @@ public class PeliculaService {
         p.setFormato(dto.getFormato());
         p.setSinopsis(dto.getSinopsis());
         p.setImagenAmpliada(dto.getImagenAmpliada());
+        p.setStock(dto.getStock() != null ? dto.getStock() : 0);
 
         // Mapear relaciones solo si vienen los IDs
         if(dto.getActoresIds() != null) {
@@ -275,6 +343,7 @@ public class PeliculaService {
             p.getFormato(),
             p.getSinopsis(),
             p.getImagenAmpliada(),
+            p.getStock(),
             p.getLastUpdate()
         );
     }

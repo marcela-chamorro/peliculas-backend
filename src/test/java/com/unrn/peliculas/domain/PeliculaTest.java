@@ -20,6 +20,7 @@ class PeliculaTest {
         pelicula.setFechaSalida(LocalDate.of(2010, 7, 16));
         pelicula.setCondicion("Nuevo");
         pelicula.setFormato("Blu-Ray");
+        pelicula.setStock(15);
         
         LocalDateTime updateDate = LocalDateTime.now();
         pelicula.setLastUpdate(updateDate);
@@ -31,6 +32,7 @@ class PeliculaTest {
         assertEquals(LocalDate.of(2010, 7, 16), pelicula.getFechaSalida(), "La fecha de salida debe coincidir");
         assertEquals("Nuevo", pelicula.getCondicion(), "La condición debe coincidir");
         assertEquals("Blu-Ray", pelicula.getFormato(), "El formato debe coincidir");
+        assertEquals(15, pelicula.getStock(), "El stock debe coincidir");
         assertEquals(updateDate, pelicula.getLastUpdate(), "El lastUpdate debe coincidir");
     }
 

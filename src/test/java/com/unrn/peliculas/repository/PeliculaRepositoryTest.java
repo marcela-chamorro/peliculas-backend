@@ -89,4 +89,34 @@ class PeliculaRepositoryTest {
         assertEquals("Nueva", resultFiltros.get(0).getTitulo());
         assertEquals("Nueva", resultAll.get(0).getTitulo());
     }
+
+    @Test
+    void testDescontarStockConcurrente() {
+        // Arrange
+        Pelicula p = new Pelicula();
+        p.setTitulo("Stock Test");
+        p.setPrecio(new BigDecimal("500.00"));
+        p.setFechaSalida(LocalDate.of(2020, 1, 1));
+        p.setCondicion("Nuevo");
+        p.setFormato("DVD");
+        p.setStock(5);
+        p.setLastUpdate(LocalDateTime.now());
+        Pelicula saved = peliculaRepository.save(p);
+
+        // Act 1: Descontar 3 unidades (debería tener éxito)
+        int filas1 = peliculaRepository.descontarStockConcurrente(saved.getPeliculaId(), 3);
+
+        // Assert 1
+        assertEquals(1, filas1, "Debería haber modificado 1 fila");
+        Pelicula p1 = peliculaRepository.findById(saved.getPeliculaId()).orElseThrow();
+        assertEquals(2, p1.getStock(), "El stock remanente debería ser 2");
+
+        // Act 2: Intentar descontar 3 unidades cuando quedan 2 (debería fallar)
+        int filas2 = peliculaRepository.descontarStockConcurrente(saved.getPeliculaId(), 3);
+
+        // Assert 2
+        assertEquals(0, filas2, "No debería modificar filas al no haber stock suficiente");
+        Pelicula p2 = peliculaRepository.findById(saved.getPeliculaId()).orElseThrow();
+        assertEquals(2, p2.getStock(), "El stock no debería haber cambiado y seguir en 2");
+    }
 }

@@ -24,6 +24,7 @@ public class PeliculaSimplificada {
     private String formato;
     private String sinopsis;
     private String imagenAmpliada;
+    private Integer stock;
     private LocalDateTime lastUpdate;
 }
 

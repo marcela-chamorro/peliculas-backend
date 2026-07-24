@@ -4,6 +4,7 @@ import com.unrn.peliculas.domain.Actor;
 import com.unrn.peliculas.domain.Director;
 import com.unrn.peliculas.domain.Genero;
 import com.unrn.peliculas.domain.Pelicula;
+import jakarta.persistence.LockModeType;
 import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.JoinType;
 import jakarta.persistence.criteria.Predicate;
@@ -11,6 +12,8 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.jpa.repository.Lock;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -102,4 +105,12 @@ public interface PeliculaRepository extends JpaRepository<Pelicula, Integer>, Jp
     @EntityGraph(attributePaths = {"actores", "directores", "generos"})
     @Query("SELECT p FROM Pelicula p WHERE p.peliculaId = :id")
     Optional<Pelicula> findByIdWithRelations(@Param("id") Integer id);
+
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    @Query("SELECT p FROM Pelicula p WHERE p.peliculaId = :id")
+    Optional<Pelicula> findByIdWithLock(@Param("id") Integer id);
+
+    @Modifying(clearAutomatically = true, flushAutomatically = true)
+    @Query("UPDATE Pelicula p SET p.stock = p.stock - :cantidad WHERE p.peliculaId = :id AND p.stock >= :cantidad")
+    int descontarStockConcurrente(@Param("id") Integer id, @Param("cantidad") Integer cantidad);
 }
