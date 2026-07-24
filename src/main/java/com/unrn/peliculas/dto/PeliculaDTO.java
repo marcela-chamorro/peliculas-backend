@@ -21,19 +21,23 @@ public class PeliculaDTO {
     private String titulo;
     private LocalDate fechaSalida;
     private BigDecimal precio;
+    private Integer stock;
     private String condicion;
     private String formato;
     private String sinopsis;
     private String imagenAmpliada;
 
-    // Para crear/editar: se envían IDs
-    private List<Integer> actoresIds;
-    private List<Integer> directoresIds;
+    // Datos que envía el frontend
+    private String director;
+    private String actores;
+
+    // Lista de géneros
     private List<Integer> generosIds;
 
-    // Para detalle: se devuelven nombres
-    private List<String> actores;
+    // Para mostrar en detalle/listado
     private List<String> directores;
     private List<String> generos;
-}
 
+    // Para el combo de géneros
+    private List<GeneroDTO> generosDetalle;
+}

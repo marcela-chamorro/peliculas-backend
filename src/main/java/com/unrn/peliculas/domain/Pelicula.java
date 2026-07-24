@@ -18,7 +18,7 @@ public class Pelicula {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @EqualsAndHashCode.Include  // Incluir el ID en equals/hashCode
+    @EqualsAndHashCode.Include // Incluir el ID en equals/hashCode
     @Column(name = "pelicula_id", nullable = false)
     private Integer peliculaId;
 
@@ -30,6 +30,9 @@ public class Pelicula {
 
     @Column(nullable = false, precision = 10, scale = 2)
     private BigDecimal precio;
+
+    @Column
+    private Integer stock;
 
     @Column(nullable = false, length = 50)
     private String condicion;
@@ -47,20 +50,14 @@ public class Pelicula {
     private LocalDateTime lastUpdate = LocalDateTime.now();
 
     @ManyToMany
-    @JoinTable(name = "pelicula_directores",
-               joinColumns = @JoinColumn(name = "pelicula_id"),
-               inverseJoinColumns = @JoinColumn(name = "director_id"))
+    @JoinTable(name = "pelicula_directores", joinColumns = @JoinColumn(name = "pelicula_id"), inverseJoinColumns = @JoinColumn(name = "director_id"))
     private Set<Director> directores = new HashSet<>();
 
     @ManyToMany
-    @JoinTable(name = "pelicula_actores",
-               joinColumns = @JoinColumn(name = "pelicula_id"),
-               inverseJoinColumns = @JoinColumn(name = "actor_id"))
+    @JoinTable(name = "pelicula_actores", joinColumns = @JoinColumn(name = "pelicula_id"), inverseJoinColumns = @JoinColumn(name = "actor_id"))
     private Set<Actor> actores = new HashSet<>();
 
     @ManyToMany
-    @JoinTable(name = "pelicula_generos",
-               joinColumns = @JoinColumn(name = "pelicula_id"),
-               inverseJoinColumns = @JoinColumn(name = "genero_id"))
+    @JoinTable(name = "pelicula_generos", joinColumns = @JoinColumn(name = "pelicula_id"), inverseJoinColumns = @JoinColumn(name = "genero_id"))
     private Set<Genero> generos = new HashSet<>();
 }
