@@ -154,8 +154,10 @@ public class PeliculaService {
 
                 throw new ResponseStatusException(
                         HttpStatus.BAD_REQUEST,
-                        "Stock insuficiente para la película: "
-                                + pelicula.getTitulo());
+                        "Stock insuficiente para la película '"
+                                + pelicula.getTitulo()
+                                + "'. Stock disponible: "
+                                + pelicula.getStock());
             }
 
             pelicula.setStock(

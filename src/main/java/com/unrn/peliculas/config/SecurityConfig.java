@@ -59,7 +59,7 @@ public class SecurityConfig {
                         .hasRole("admin")
 
                         .requestMatchers(HttpMethod.PUT, "/peliculas/descontar-stock")
-                        .authenticated()
+                        .permitAll()
 
                         .requestMatchers(HttpMethod.PUT, "/peliculas/**")
                         .hasRole("admin")
