@@ -97,6 +97,17 @@ public interface PeliculaRepository extends JpaRepository<Pelicula, Integer>, Jp
         });
     }
 
+    @EntityGraph(attributePaths = {"actores", "directores", "generos"})
+@Query("""
+    SELECT DISTINCT p
+    FROM Pelicula p
+    LEFT JOIN p.generos g
+    WHERE LOWER(p.titulo) LIKE LOWER(CONCAT('%', :texto, '%'))
+       OR LOWER(g.nombre) LIKE LOWER(CONCAT('%', :texto, '%'))
+    ORDER BY p.fechaSalida DESC
+""")
+List<Pelicula> buscarPorTituloOGenero(@Param("texto") String texto);
+
     // Mantener los otros métodos
     @EntityGraph(attributePaths = {"actores", "directores", "generos"})
     @Query("SELECT p FROM Pelicula p ORDER BY p.fechaSalida DESC")
