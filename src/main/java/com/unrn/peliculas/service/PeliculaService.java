@@ -33,124 +33,115 @@ import java.util.stream.Collectors;
 @Transactional
 public class PeliculaService {
 
-    @Autowired
-    private PeliculaRepository peliculaRepo;
+        @Autowired
+        private PeliculaRepository peliculaRepo;
 
-    @Autowired
-    private ActorRepository actorRepo;
+        @Autowired
+        private ActorRepository actorRepo;
 
-    @Autowired
-    private DirectorRepository directorRepo;
+        @Autowired
+        private DirectorRepository directorRepo;
 
-    @Autowired
-    private GeneroRepository generoRepo;
+        @Autowired
+        private GeneroRepository generoRepo;
 
-    @Autowired
-    private PeliculaEventPublisher eventPublisher;
+        @Autowired
+        private PeliculaEventPublisher eventPublisher;
 
-    public PeliculaDTO crearPelicula(PeliculaDTO dto) {
+        public PeliculaDTO crearPelicula(PeliculaDTO dto) {
 
-        Pelicula pelicula = toEntity(dto);
+                Pelicula pelicula = toEntity(dto);
 
-        peliculaRepo.save(pelicula);
+                peliculaRepo.save(pelicula);
 
-        Event<Integer, PeliculaSimplificada> evento =
-                new Event<>(
-                        EventType.CREATE,
-                        pelicula.getPeliculaId(),
-                        toPeliculaSimplificada(pelicula));
+                Event<Integer, PeliculaSimplificada> evento = new Event<>(
+                                EventType.CREATE,
+                                pelicula.getPeliculaId(),
+                                toPeliculaSimplificada(pelicula));
 
-        eventPublisher.enviarEvento(evento);
+                eventPublisher.enviarEvento(evento);
 
-        return toDTO(pelicula);
-    }
-
-    public PeliculaDTO editarPelicula(Integer id, PeliculaDTO dto) {
-
-        Pelicula pelicula = peliculaRepo.findById(id)
-                .orElseThrow(() ->
-                        new RuntimeException("Película no encontrada"));
-
-        pelicula.setTitulo(dto.getTitulo());
-        pelicula.setFechaSalida(dto.getFechaSalida());
-        pelicula.setPrecio(dto.getPrecio());
-        pelicula.setStock(dto.getStock());
-        pelicula.setCondicion(dto.getCondicion());
-        pelicula.setFormato(dto.getFormato());
-        pelicula.setSinopsis(dto.getSinopsis());
-        pelicula.setImagenAmpliada(dto.getImagenAmpliada());
-
-        pelicula.setDirectores(
-                obtenerOCrearDirector(dto.getDirector()));
-
-        pelicula.setActores(
-                obtenerOCrearActores(dto.getActores()));
-
-        if (dto.getGenerosIds() != null) {
-
-            pelicula.setGeneros(
-                    dto.getGenerosIds()
-                            .stream()
-                            .map(idGenero ->
-                                    generoRepo.findById(idGenero)
-                                            .orElseThrow(() ->
-                                                    new RuntimeException(
-                                                            "Género no encontrado: "
-                                                                    + idGenero)))
-                            .collect(Collectors.toSet()));
+                return toDTO(pelicula);
         }
 
-        pelicula.setLastUpdate(LocalDateTime.now());
+        public PeliculaDTO editarPelicula(Integer id, PeliculaDTO dto) {
 
-        pelicula = peliculaRepo.save(pelicula);
+                Pelicula pelicula = peliculaRepo.findById(id)
+                                .orElseThrow(() -> new RuntimeException("Película no encontrada"));
 
-        Event<Integer, PeliculaSimplificada> evento =
-                new Event<>(
-                        EventType.UPDATE,
-                        pelicula.getPeliculaId(),
-                        toPeliculaSimplificada(pelicula));
+                pelicula.setTitulo(dto.getTitulo());
+                pelicula.setFechaSalida(dto.getFechaSalida());
+                pelicula.setPrecio(dto.getPrecio());
+                pelicula.setStock(dto.getStock());
+                pelicula.setCondicion(dto.getCondicion());
+                pelicula.setFormato(dto.getFormato());
+                pelicula.setSinopsis(dto.getSinopsis());
+                pelicula.setImagenAmpliada(dto.getImagenAmpliada());
 
-        eventPublisher.enviarEvento(evento);
+                pelicula.setDirectores(
+                                obtenerOCrearDirector(dto.getDirector()));
 
-        return toDTO(pelicula);
-    }
+                pelicula.setActores(
+                                obtenerOCrearActores(dto.getActores()));
 
-    public void actualizarStock(Integer peliculaId, Integer nuevoStock) {
+                if (dto.getGenerosIds() != null) {
 
-        Pelicula pelicula = peliculaRepo.findById(peliculaId)
-                .orElseThrow(() ->
-                        new ResponseStatusException(
-                                HttpStatus.NOT_FOUND,
-                                "Película no encontrada"));
+                        pelicula.setGeneros(
+                                        dto.getGenerosIds()
+                                                        .stream()
+                                                        .map(idGenero -> generoRepo.findById(idGenero)
+                                                                        .orElseThrow(() -> new RuntimeException(
+                                                                                        "Género no encontrado: "
+                                                                                                        + idGenero)))
+                                                        .collect(Collectors.toSet()));
+                }
 
-        if (nuevoStock < 0) {
+                pelicula.setLastUpdate(LocalDateTime.now());
 
-            throw new ResponseStatusException(
-                    HttpStatus.BAD_REQUEST,
-                    "El stock no puede ser negativo");
+                pelicula = peliculaRepo.save(pelicula);
+
+                Event<Integer, PeliculaSimplificada> evento = new Event<>(
+                                EventType.UPDATE,
+                                pelicula.getPeliculaId(),
+                                toPeliculaSimplificada(pelicula));
+
+                eventPublisher.enviarEvento(evento);
+
+                return toDTO(pelicula);
         }
 
-        pelicula.setStock(nuevoStock);
+        public void actualizarStock(Integer peliculaId, Integer nuevoStock) {
 
-        peliculaRepo.save(pelicula);
-    }
+                Pelicula pelicula = peliculaRepo.findById(peliculaId)
+                                .orElseThrow(() -> new ResponseStatusException(
+                                                HttpStatus.NOT_FOUND,
+                                                "Película no encontrada"));
 
-    public void descontarStock(DescuentoStockRequestDTO request) {
+                if (nuevoStock < 0) {
 
-        List<Pelicula> peliculasActualizadas =
-                new ArrayList<>();
+                        throw new ResponseStatusException(
+                                        HttpStatus.BAD_REQUEST,
+                                        "El stock no puede ser negativo");
+                }
 
-        for (DescuentoStockDTO item : request.getPeliculas()) {
+                pelicula.setStock(nuevoStock);
 
-            Pelicula pelicula =
-                    peliculaRepo.findById(item.getPeliculaId())
-                            .orElseThrow(() ->
-                                    new ResponseStatusException(
-                                            HttpStatus.NOT_FOUND,
-                                            "Película no encontrada: "
-                                                    + item.getPeliculaId()));
+                peliculaRepo.save(pelicula);
+        }
 
-            if (pelicula.getStock() < item.getCantidad()) {
+        public void descontarStock(DescuentoStockRequestDTO request) {
+
+                List<Pelicula> peliculasActualizadas = new ArrayList<>();
+
+                for (DescuentoStockDTO item : request.getPeliculas()) {
+
+                        Pelicula pelicula = peliculaRepo.findById(item.getPeliculaId())
+                                        .orElseThrow(() -> new ResponseStatusException(
+                                                        HttpStatus.NOT_FOUND,
+                                                        "Película no encontrada: "
+                                                                        + item.getPeliculaId()));
+
+                        if (pelicula.getStock() < item.getCantidad()) {
 
                 throw new ResponseStatusException(
                         HttpStatus.BAD_REQUEST,
@@ -160,429 +151,410 @@ public class PeliculaService {
                                 + pelicula.getStock());
             }
 
-            pelicula.setStock(
-                    pelicula.getStock() - item.getCantidad());
+                        pelicula.setStock(
+                                        pelicula.getStock() - item.getCantidad());
 
-            peliculasActualizadas.add(pelicula);
+                        peliculasActualizadas.add(pelicula);
+                }
+
+                peliculaRepo.saveAll(peliculasActualizadas);
         }
 
-        peliculaRepo.saveAll(peliculasActualizadas);
-    }
+        public PeliculaDTO obtenerDetallePelicula(Integer id) {
 
-    public PeliculaDTO obtenerDetallePelicula(Integer id) {
+                Pelicula pelicula = peliculaRepo.findByIdWithRelations(id)
+                                .orElseThrow(() -> new ResponseStatusException(
+                                                HttpStatus.NOT_FOUND,
+                                                "Película no encontrada"));
 
-        Pelicula pelicula =
-                peliculaRepo.findByIdWithRelations(id)
-                        .orElseThrow(() ->
-                                new ResponseStatusException(
-                                        HttpStatus.NOT_FOUND,
-                                        "Película no encontrada"));
-
-        return toDTO(pelicula);
-    }
-
-    public List<PeliculaDTO> listarTodasLasPeliculas() {
-
-        return peliculaRepo.findAllWithRelations()
-                .stream()
-                .map(this::toDTOLista)
-                .collect(Collectors.toList());
-    }
-
-    public List<PeliculaDTO> listarPeliculasFiltradas(
-            String titulo,
-            String genero,
-            String director,
-            String actor,
-            Integer anio,
-            BigDecimal precioMax,
-            String formato) {
-
-        return peliculaRepo.findByFiltros(
-                        titulo,
-                        genero,
-                        director,
-                        actor,
-                        anio,
-                        precioMax,
-                        formato)
-                .stream()
-                .map(this::toDTOLista)
-                .collect(Collectors.toList());
-    }
-
-    public List<PeliculaDTO> listarPorGenero(String genero) {
-
-        return peliculaRepo.findByFiltros(
-                        null,
-                        genero,
-                        null,
-                        null,
-                        null,
-                        null,
-                        null)
-                .stream()
-                .map(this::toDTOLista)
-                .collect(Collectors.toList());
-    }
-
-    public List<PeliculaDTO> listarPorDirector(String director) {
-
-        return peliculaRepo.findByFiltros(
-                        null,
-                        null,
-                        director,
-                        null,
-                        null,
-                        null,
-                        null)
-                .stream()
-                .map(this::toDTOLista)
-                .collect(Collectors.toList());
-    }
-
-    public List<PeliculaDTO> listarPorActor(String actor) {
-
-        return peliculaRepo.findByFiltros(
-                        null,
-                        null,
-                        null,
-                        actor,
-                        null,
-                        null,
-                        null)
-                .stream()
-                .map(this::toDTOLista)
-                .collect(Collectors.toList());
-    }
-
-    public List<PeliculaDTO> buscarPeliculas(String query) {
-
-        if (query == null || query.isBlank()) {
-            return listarTodasLasPeliculas();
+                return toDTO(pelicula);
         }
 
-        query = query.toLowerCase().trim();
+        public List<PeliculaDTO> listarTodasLasPeliculas() {
 
-        return peliculaRepo.findByFiltros(
-                        query,
-                        query,
-                        query,
-                        query,
-                        null,
-                        null,
-                        null)
-                .stream()
-                .map(this::toDTOLista)
-                .collect(Collectors.toList());
-    }
-
-    public List<PeliculaDTO> listarPeliculasRecientes() {
-
-        int anio = LocalDate.now().getYear();
-
-        return peliculaRepo.findAllWithRelations()
-                .stream()
-                .filter(p ->
-                        p.getFechaSalida().getYear() >= anio - 2)
-                .map(this::toDTOLista)
-                .collect(Collectors.toList());
-    }
-
-    public List<PeliculaDTO> listarPeliculasEnOferta() {
-
-        return peliculaRepo.findAllWithRelations()
-                .stream()
-                .filter(p ->
-                        p.getPrecio()
-                                .compareTo(BigDecimal.TEN) < 0)
-                .map(this::toDTOLista)
-                .collect(Collectors.toList());
-    }
-
-    // =======================
-    // Métodos de Gestión y Control de Stock (RF-15 Concurrencia)
-    // =======================
-
-    public Integer consultarStock(Integer id) {
-        Pelicula p = peliculaRepo.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Película no encontrada"));
-        return p.getStock();
-    }
-
-    public PeliculaDTO descontarStock(Integer id, Integer cantidad) {
-        if (cantidad == null || cantidad <= 0) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "La cantidad a descontar debe ser mayor a 0");
+                return peliculaRepo.findAllWithRelations()
+                                .stream()
+                                .map(this::toDTOLista)
+                                .collect(Collectors.toList());
         }
 
-        // Intento de actualización atómica directa a nivel SQL para mayor eficiencia y seguridad bajo concurrencia
-        int filasAfectadas = peliculaRepo.descontarStockConcurrente(id, cantidad);
-        if (filasAfectadas == 0) {
-            // Verificar si la película no existe o si no hay stock suficiente
-            Pelicula p = peliculaRepo.findById(id)
-                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Película no encontrada"));
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
-                    "Stock insuficiente para la película '" + p.getTitulo() + "'. Stock disponible: " + p.getStock());
+        public List<PeliculaDTO> listarPeliculasFiltradas(
+                        String titulo,
+                        String genero,
+                        String director,
+                        String actor,
+                        Integer anio,
+                        BigDecimal precioMax,
+                        String formato) {
+
+                return peliculaRepo.findByFiltros(
+                                titulo,
+                                genero,
+                                director,
+                                actor,
+                                anio,
+                                precioMax,
+                                formato)
+                                .stream()
+                                .map(this::toDTOLista)
+                                .collect(Collectors.toList());
         }
 
-        Pelicula p = peliculaRepo.findByIdWithRelations(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Película no encontrada"));
+        public List<PeliculaDTO> listarPorGenero(String genero) {
 
-        // Publicar evento UPDATE con el stock actualizado
-        Event<Integer, PeliculaSimplificada> evento = new Event<>(
-            EventType.UPDATE,
-            p.getPeliculaId(),
-            toPeliculaSimplificada(p)
-        );
-        eventPublisher.enviarEvento(evento);
-
-        return toDTO(p);
-    }
-
-    public PeliculaDTO reponerStock(Integer id, Integer cantidad) {
-        if (cantidad == null || cantidad <= 0) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "La cantidad a reponer debe ser mayor a 0");
+                return peliculaRepo.findByFiltros(
+                                null,
+                                genero,
+                                null,
+                                null,
+                                null,
+                                null,
+                                null)
+                                .stream()
+                                .map(this::toDTOLista)
+                                .collect(Collectors.toList());
         }
 
-        Pelicula p = peliculaRepo.findByIdWithLock(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Película no encontrada"));
+        public List<PeliculaDTO> listarPorDirector(String director) {
 
-        p.setStock((p.getStock() != null ? p.getStock() : 0) + cantidad);
-        p.setLastUpdate(LocalDateTime.now());
-        peliculaRepo.save(p);
-
-        // Publicar evento UPDATE con el stock actualizado
-        Event<Integer, PeliculaSimplificada> evento = new Event<>(
-            EventType.UPDATE,
-            p.getPeliculaId(),
-            toPeliculaSimplificada(p)
-        );
-        eventPublisher.enviarEvento(evento);
-
-        return toDTO(p);
-    }
-
-    // =======================
-    // Métodos privados de conversión
-    // =======================
-
-    private PeliculaDTO toDTO(Pelicula pelicula) {
-
-        return PeliculaDTO.builder()
-                .peliculaId(pelicula.getPeliculaId())
-                .titulo(pelicula.getTitulo())
-                .fechaSalida(pelicula.getFechaSalida())
-                .precio(pelicula.getPrecio())
-                .stock(pelicula.getStock())
-                .condicion(pelicula.getCondicion())
-                .formato(pelicula.getFormato())
-                .sinopsis(pelicula.getSinopsis())
-                .imagenAmpliada(pelicula.getImagenAmpliada())
-
-                // Director (uno solo)
-                .director(
-                        pelicula.getDirectores()
+                return peliculaRepo.findByFiltros(
+                                null,
+                                null,
+                                director,
+                                null,
+                                null,
+                                null,
+                                null)
                                 .stream()
-                                .findFirst()
-                                .map(Director::getNombre)
-                                .orElse("")
-                )
-
-                // Actores separados por coma
-                .actores(
-                        pelicula.getActores()
-                                .stream()
-                                .map(Actor::getNombre)
-                                .collect(Collectors.joining(", "))
-                )
-
-                .directores(
-                        pelicula.getDirectores()
-                                .stream()
-                                .map(Director::getNombre)
-                                .collect(Collectors.toList())
-                )
-
-                .generos(
-                        pelicula.getGeneros()
-                                .stream()
-                                .map(Genero::getNombre)
-                                .collect(Collectors.toList())
-                )
-
-                .generosDetalle(
-                        pelicula.getGeneros()
-                                .stream()
-                                .map(genero ->
-                                        GeneroDTO.builder()
-                                                .generoId(genero.getGeneroId())
-                                                .nombre(genero.getNombre())
-                                                .build())
-                                .collect(Collectors.toList())
-                )
-                .build();
-    }
-
-    private PeliculaDTO toDTOLista(Pelicula pelicula) {
-
-        return PeliculaDTO.builder()
-
-                .peliculaId(pelicula.getPeliculaId())
-                .titulo(pelicula.getTitulo())
-                .fechaSalida(pelicula.getFechaSalida())
-                .precio(pelicula.getPrecio())
-                .stock(pelicula.getStock())
-                .condicion(pelicula.getCondicion())
-                .formato(pelicula.getFormato())
-
-                .sinopsis(
-                        pelicula.getSinopsis() != null &&
-                        pelicula.getSinopsis().length() > 100
-                                ? pelicula.getSinopsis().substring(0, 100) + "..."
-                                : pelicula.getSinopsis())
-
-                .imagenAmpliada(pelicula.getImagenAmpliada())
-
-                .director(
-                        pelicula.getDirectores()
-                                .stream()
-                                .findFirst()
-                                .map(Director::getNombre)
-                                .orElse("")
-                )
-
-                .actores(
-                        pelicula.getActores()
-                                .stream()
-                                .map(Actor::getNombre)
-                                .collect(Collectors.joining(", "))
-                )
-
-                .directores(
-                        pelicula.getDirectores()
-                                .stream()
-                                .map(Director::getNombre)
-                                .collect(Collectors.toList())
-                )
-
-                .generos(
-                        pelicula.getGeneros()
-                                .stream()
-                                .map(Genero::getNombre)
-                                .collect(Collectors.toList())
-                )
-
-                .build();
-    }
-
-    private Pelicula toEntity(PeliculaDTO dto) {
-
-        Pelicula pelicula = new Pelicula();
-
-        pelicula.setTitulo(dto.getTitulo());
-        pelicula.setFechaSalida(dto.getFechaSalida());
-        pelicula.setPrecio(dto.getPrecio());
-        pelicula.setStock(dto.getStock());
-        pelicula.setCondicion(dto.getCondicion());
-        pelicula.setFormato(dto.getFormato());
-        pelicula.setSinopsis(dto.getSinopsis());
-        pelicula.setImagenAmpliada(dto.getImagenAmpliada());
-
-        pelicula.setDirectores(
-                obtenerOCrearDirector(dto.getDirector()));
-
-        pelicula.setActores(
-                obtenerOCrearActores(dto.getActores()));
-
-        if (dto.getGenerosIds() != null) {
-
-            pelicula.setGeneros(
-                    dto.getGenerosIds()
-                            .stream()
-                            .map(id ->
-                                    generoRepo.findById(id)
-                                            .orElseThrow(() ->
-                                                    new RuntimeException(
-                                                            "Género no encontrado: "
-                                                                    + id)))
-                            .collect(Collectors.toSet()));
+                                .map(this::toDTOLista)
+                                .collect(Collectors.toList());
         }
 
-        pelicula.setLastUpdate(LocalDateTime.now());
+        public List<PeliculaDTO> listarPorActor(String actor) {
 
-        return pelicula;
-    }
+                return peliculaRepo.findByFiltros(
+                                null,
+                                null,
+                                null,
+                                actor,
+                                null,
+                                null,
+                                null)
+                                .stream()
+                                .map(this::toDTOLista)
+                                .collect(Collectors.toList());
+        }
+
+        public List<PeliculaDTO> buscarPeliculas(String query) {
+
+                if (query == null || query.isBlank()) {
+                        return listarTodasLasPeliculas();
+                }
+
+                return peliculaRepo.buscarPorTituloOGenero(query.trim())
+                                .stream()
+                                .map(this::toDTOLista)
+                                .collect(Collectors.toList());
+        }
+
+        public List<PeliculaDTO> listarPeliculasRecientes() {
+
+                int anio = LocalDate.now().getYear();
+
+                return peliculaRepo.findAllWithRelations()
+                                .stream()
+                                .filter(p -> p.getFechaSalida().getYear() >= anio - 2)
+                                .map(this::toDTOLista)
+                                .collect(Collectors.toList());
+        }
+
+        public List<PeliculaDTO> listarPeliculasEnOferta() {
+
+                return peliculaRepo.findAllWithRelations()
+                                .stream()
+                                .filter(p -> p.getPrecio()
+                                                .compareTo(BigDecimal.TEN) < 0)
+                                .map(this::toDTOLista)
+                                .collect(Collectors.toList());
+        }
+
+        // =======================
+        // Métodos de Gestión y Control de Stock (RF-15 Concurrencia)
+        // =======================
+
+        public Integer consultarStock(Integer id) {
+                Pelicula p = peliculaRepo.findById(id)
+                                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
+                                                "Película no encontrada"));
+                return p.getStock();
+        }
+
+        public PeliculaDTO descontarStock(Integer id, Integer cantidad) {
+                if (cantidad == null || cantidad <= 0) {
+                        throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                                        "La cantidad a descontar debe ser mayor a 0");
+                }
+
+                // Intento de actualización atómica directa a nivel SQL para mayor eficiencia y
+                // seguridad bajo concurrencia
+                int filasAfectadas = peliculaRepo.descontarStockConcurrente(id, cantidad);
+                if (filasAfectadas == 0) {
+                        // Verificar si la película no existe o si no hay stock suficiente
+                        Pelicula p = peliculaRepo.findById(id)
+                                        .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
+                                                        "Película no encontrada"));
+                        throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                                        "Stock insuficiente para la película '" + p.getTitulo()
+                                                        + "'. Stock disponible: " + p.getStock());
+                }
+
+                Pelicula p = peliculaRepo.findByIdWithRelations(id)
+                                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
+                                                "Película no encontrada"));
+
+                // Publicar evento UPDATE con el stock actualizado
+                Event<Integer, PeliculaSimplificada> evento = new Event<>(
+                                EventType.UPDATE,
+                                p.getPeliculaId(),
+                                toPeliculaSimplificada(p));
+                eventPublisher.enviarEvento(evento);
+
+                return toDTO(p);
+        }
+
+        public PeliculaDTO reponerStock(Integer id, Integer cantidad) {
+                if (cantidad == null || cantidad <= 0) {
+                        throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                                        "La cantidad a reponer debe ser mayor a 0");
+                }
+
+                Pelicula p = peliculaRepo.findByIdWithLock(id)
+                                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
+                                                "Película no encontrada"));
+
+                p.setStock((p.getStock() != null ? p.getStock() : 0) + cantidad);
+                p.setLastUpdate(LocalDateTime.now());
+                peliculaRepo.save(p);
+
+                // Publicar evento UPDATE con el stock actualizado
+                Event<Integer, PeliculaSimplificada> evento = new Event<>(
+                                EventType.UPDATE,
+                                p.getPeliculaId(),
+                                toPeliculaSimplificada(p));
+                eventPublisher.enviarEvento(evento);
+
+                return toDTO(p);
+        }
+
+        // =======================
+        // Métodos privados de conversión
+        // =======================
+
+        private PeliculaDTO toDTO(Pelicula pelicula) {
+
+                return PeliculaDTO.builder()
+                                .peliculaId(pelicula.getPeliculaId())
+                                .titulo(pelicula.getTitulo())
+                                .fechaSalida(pelicula.getFechaSalida())
+                                .precio(pelicula.getPrecio())
+                                .stock(pelicula.getStock())
+                                .condicion(pelicula.getCondicion())
+                                .formato(pelicula.getFormato())
+                                .sinopsis(pelicula.getSinopsis())
+                                .imagenAmpliada(pelicula.getImagenAmpliada())
+
+                                // Director (uno solo)
+                                .director(
+                                                pelicula.getDirectores()
+                                                                .stream()
+                                                                .findFirst()
+                                                                .map(Director::getNombre)
+                                                                .orElse(""))
+
+                                // Actores separados por coma
+                                .actores(
+                                                pelicula.getActores()
+                                                                .stream()
+                                                                .map(Actor::getNombre)
+                                                                .collect(Collectors.joining(", ")))
+
+                                .directores(
+                                                pelicula.getDirectores()
+                                                                .stream()
+                                                                .map(Director::getNombre)
+                                                                .collect(Collectors.toList()))
+
+                                .generos(
+                                                pelicula.getGeneros()
+                                                                .stream()
+                                                                .map(Genero::getNombre)
+                                                                .collect(Collectors.toList()))
+
+                                .generosDetalle(
+                                                pelicula.getGeneros()
+                                                                .stream()
+                                                                .map(genero -> GeneroDTO.builder()
+                                                                                .generoId(genero.getGeneroId())
+                                                                                .nombre(genero.getNombre())
+                                                                                .build())
+                                                                .collect(Collectors.toList()))
+                                .build();
+        }
+
+        private PeliculaDTO toDTOLista(Pelicula pelicula) {
+
+                return PeliculaDTO.builder()
+
+                                .peliculaId(pelicula.getPeliculaId())
+                                .titulo(pelicula.getTitulo())
+                                .fechaSalida(pelicula.getFechaSalida())
+                                .precio(pelicula.getPrecio())
+                                .stock(pelicula.getStock())
+                                .condicion(pelicula.getCondicion())
+                                .formato(pelicula.getFormato())
+
+                                .sinopsis(
+                                                pelicula.getSinopsis() != null &&
+                                                                pelicula.getSinopsis().length() > 100
+                                                                                ? pelicula.getSinopsis().substring(0,
+                                                                                                100) + "..."
+                                                                                : pelicula.getSinopsis())
+
+                                .imagenAmpliada(pelicula.getImagenAmpliada())
+
+                                .director(
+                                                pelicula.getDirectores()
+                                                                .stream()
+                                                                .findFirst()
+                                                                .map(Director::getNombre)
+                                                                .orElse(""))
+
+                                .actores(
+                                                pelicula.getActores()
+                                                                .stream()
+                                                                .map(Actor::getNombre)
+                                                                .collect(Collectors.joining(", ")))
+
+                                .directores(
+                                                pelicula.getDirectores()
+                                                                .stream()
+                                                                .map(Director::getNombre)
+                                                                .collect(Collectors.toList()))
+
+                                .generos(
+                                                pelicula.getGeneros()
+                                                                .stream()
+                                                                .map(Genero::getNombre)
+                                                                .collect(Collectors.toList()))
+
+                                .build();
+        }
+
+        private Pelicula toEntity(PeliculaDTO dto) {
+
+                Pelicula pelicula = new Pelicula();
+
+                pelicula.setTitulo(dto.getTitulo());
+                pelicula.setFechaSalida(dto.getFechaSalida());
+                pelicula.setPrecio(dto.getPrecio());
+                pelicula.setStock(dto.getStock());
+                pelicula.setCondicion(dto.getCondicion());
+                pelicula.setFormato(dto.getFormato());
+                pelicula.setSinopsis(dto.getSinopsis());
+                pelicula.setImagenAmpliada(dto.getImagenAmpliada());
+
+                pelicula.setDirectores(
+                                obtenerOCrearDirector(dto.getDirector()));
+
+                pelicula.setActores(
+                                obtenerOCrearActores(dto.getActores()));
+
+                if (dto.getGenerosIds() != null) {
+
+                        pelicula.setGeneros(
+                                        dto.getGenerosIds()
+                                                        .stream()
+                                                        .map(id -> generoRepo.findById(id)
+                                                                        .orElseThrow(() -> new RuntimeException(
+                                                                                        "Género no encontrado: "
+                                                                                                        + id)))
+                                                        .collect(Collectors.toSet()));
+                }
+
+                pelicula.setLastUpdate(LocalDateTime.now());
+
+                return pelicula;
+        }
 
         private Set<Director> obtenerOCrearDirector(String nombreDirector) {
 
-        Set<Director> directores = new HashSet<>();
+                Set<Director> directores = new HashSet<>();
 
-        if (nombreDirector == null || nombreDirector.isBlank()) {
-            return directores;
+                if (nombreDirector == null || nombreDirector.isBlank()) {
+                        return directores;
+                }
+
+                Director director = directorRepo
+                                .findByNombreIgnoreCase(nombreDirector.trim())
+                                .orElseGet(() -> {
+
+                                        Director nuevo = new Director();
+                                        nuevo.setNombre(nombreDirector.trim());
+
+                                        return directorRepo.save(nuevo);
+                                });
+
+                directores.add(director);
+
+                return directores;
         }
 
-        Director director = directorRepo
-                .findByNombreIgnoreCase(nombreDirector.trim())
-                .orElseGet(() -> {
+        private Set<Actor> obtenerOCrearActores(String textoActores) {
 
-                    Director nuevo = new Director();
-                    nuevo.setNombre(nombreDirector.trim());
+                Set<Actor> actores = new HashSet<>();
 
-                    return directorRepo.save(nuevo);
-                });
+                if (textoActores == null || textoActores.isBlank()) {
+                        return actores;
+                }
 
-        directores.add(director);
+                Arrays.stream(textoActores.split(","))
+                                .map(String::trim)
+                                .filter(nombre -> !nombre.isBlank())
+                                .forEach(nombre -> {
 
-        return directores;
-    }
+                                        Actor actor = actorRepo
+                                                        .findByNombreIgnoreCase(nombre)
+                                                        .orElseGet(() -> {
 
-    private Set<Actor> obtenerOCrearActores(String textoActores) {
+                                                                Actor nuevo = new Actor();
+                                                                nuevo.setNombre(nombre);
 
-        Set<Actor> actores = new HashSet<>();
+                                                                return actorRepo.save(nuevo);
+                                                        });
 
-        if (textoActores == null || textoActores.isBlank()) {
-            return actores;
+                                        actores.add(actor);
+                                });
+
+                return actores;
         }
 
-        Arrays.stream(textoActores.split(","))
-                .map(String::trim)
-                .filter(nombre -> !nombre.isBlank())
-                .forEach(nombre -> {
+        // ==========================================================
+        // Conversión para eventos RabbitMQ
+        // ==========================================================
 
-                    Actor actor = actorRepo
-                            .findByNombreIgnoreCase(nombre)
-                            .orElseGet(() -> {
+        private PeliculaSimplificada toPeliculaSimplificada(Pelicula pelicula) {
 
-                                Actor nuevo = new Actor();
-                                nuevo.setNombre(nombre);
-
-                                return actorRepo.save(nuevo);
-                            });
-
-                    actores.add(actor);
-                });
-
-        return actores;
-    }
-
-    // ==========================================================
-    // Conversión para eventos RabbitMQ
-    // ==========================================================
-
-    private PeliculaSimplificada toPeliculaSimplificada(Pelicula pelicula) {
-
-        return new PeliculaSimplificada(
-                pelicula.getPeliculaId(),
-                pelicula.getTitulo(),
-                pelicula.getFechaSalida(),
-                pelicula.getPrecio(),
-                pelicula.getCondicion(),
-                pelicula.getFormato(),
-                pelicula.getSinopsis(),
-                pelicula.getImagenAmpliada(),
-                pelicula.getStock(),
-                pelicula.getLastUpdate()
-        );
-    }
+                return new PeliculaSimplificada(
+                                pelicula.getPeliculaId(),
+                                pelicula.getTitulo(),
+                                pelicula.getFechaSalida(),
+                                pelicula.getPrecio(),
+                                pelicula.getCondicion(),
+                                pelicula.getFormato(),
+                                pelicula.getSinopsis(),
+                                pelicula.getImagenAmpliada(),
+                                pelicula.getStock(),
+                                pelicula.getLastUpdate());
+        }
 
 }
