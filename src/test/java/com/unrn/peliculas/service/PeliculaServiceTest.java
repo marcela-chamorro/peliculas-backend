@@ -5,6 +5,8 @@ import com.unrn.peliculas.domain.Director;
 import com.unrn.peliculas.domain.Genero;
 import com.unrn.peliculas.domain.Pelicula;
 import com.unrn.peliculas.dto.PeliculaDTO;
+import com.unrn.peliculas.dto.DescuentoStockRequestDTO;
+import com.unrn.peliculas.dto.DescuentoStockDTO;
 import com.unrn.peliculas.event.dto.Event;
 import com.unrn.peliculas.repository.ActorRepository;
 import com.unrn.peliculas.repository.DirectorRepository;
@@ -457,5 +459,44 @@ class PeliculaServiceTest {
         assertEquals(15, peliculaTest.getStock());
         verify(peliculaRepo, times(1)).save(peliculaTest);
         verify(eventPublisher, times(1)).enviarEvento(any());
+    }
+    @Test
+    void testDescontarStockLista_Exitoso() {
+        DescuentoStockRequestDTO request = new DescuentoStockRequestDTO();
+        DescuentoStockDTO item = new DescuentoStockDTO();
+        item.setPeliculaId(1);
+        item.setCantidad(2);
+        request.setPeliculas(List.of(item));
+
+        Pelicula p = new Pelicula();
+        p.setPeliculaId(1);
+        p.setStock(10);
+        when(peliculaRepo.findById(1)).thenReturn(Optional.of(p));
+
+        peliculaService.descontarStock(request);
+
+        assertEquals(8, p.getStock());
+        verify(peliculaRepo, times(1)).saveAll(anyList());
+    }
+
+    @Test
+    void testDescontarStockLista_StockInsuficiente() {
+        DescuentoStockRequestDTO request = new DescuentoStockRequestDTO();
+        DescuentoStockDTO item = new DescuentoStockDTO();
+        item.setPeliculaId(1);
+        item.setCantidad(20); // Mayor al stock disponible
+        request.setPeliculas(List.of(item));
+
+        Pelicula p = new Pelicula();
+        p.setPeliculaId(1);
+        p.setStock(10);
+        p.setTitulo("Inception");
+        when(peliculaRepo.findById(1)).thenReturn(Optional.of(p));
+
+        ResponseStatusException ex = assertThrows(ResponseStatusException.class, () -> {
+            peliculaService.descontarStock(request);
+        });
+
+        assertTrue(ex.getReason().contains("Stock insuficiente"));
     }
 }

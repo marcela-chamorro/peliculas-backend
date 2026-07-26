@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.unrn.peliculas.dto.PeliculaDTO;
 import com.unrn.peliculas.service.PeliculaService;
 import com.unrn.peliculas.service.port.HistorialVentasPort;
+import com.unrn.peliculas.dto.VentaPorPeliculaDTO;
 
 import jakarta.servlet.ServletException;
 
@@ -250,5 +251,53 @@ class PeliculaControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.peliculaId").value(1))
                 .andExpect(jsonPath("$.stock").value(15));
+    }
+
+    @Test
+    void testProbarHistorial() throws Exception {
+        VentaPorPeliculaDTO venta = new VentaPorPeliculaDTO();
+        venta.setPeliculaId(1);
+        venta.setCantidadVendida(10);
+        when(historialVentasPort.obtenerVentasPorPelicula()).thenReturn(List.of(venta));
+
+        mockMvc.perform(get("/peliculas/stock/test"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()").value(1))
+                .andExpect(jsonPath("$[0].peliculaId").value(1));
+    }
+
+    @Test
+    void testDescontarStockDto() throws Exception {
+        com.unrn.peliculas.dto.DescuentoStockRequestDTO request = new com.unrn.peliculas.dto.DescuentoStockRequestDTO();
+        
+        mockMvc.perform(put("/peliculas/descontar-stock")
+                .with(jwt().jwt(jwt -> jwt.claim("realm_access", Map.of("roles", List.of("admin")))))
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    void testActualizarStock() throws Exception {
+        com.unrn.peliculas.dto.ActualizarStockDTO request = new com.unrn.peliculas.dto.ActualizarStockDTO();
+        request.setStock(50);
+        
+        mockMvc.perform(put("/peliculas/{id}/stock", 1)
+                .with(jwt().jwt(jwt -> jwt.claim("realm_access", Map.of("roles", List.of("admin")))))
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    void testBuscarPeliculas() throws Exception {
+        PeliculaDTO dto = new PeliculaDTO();
+        dto.setTitulo("Inception");
+        when(peliculaService.buscarPeliculas("Inception")).thenReturn(List.of(dto));
+
+        mockMvc.perform(get("/peliculas/buscar").param("query", "Inception"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()").value(1))
+                .andExpect(jsonPath("$[0].titulo").value("Inception"));
     }
 }

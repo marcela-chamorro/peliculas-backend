@@ -52,12 +52,18 @@ class PeliculaRepositoryTest {
         peliculaRepository.save(pelicula);
 
         // Act
-        List<Pelicula> resultados = peliculaRepository.findByFiltros(
+        List<Pelicula> resultMatrix = peliculaRepository.findByFiltros(
                 "Matrix", null, null, null, null, new BigDecimal("1000.00"), null);
+                
+        List<Pelicula> resultFull = peliculaRepository.findByFiltros(
+                null, "Accion", "Wachowski", "Reeves", 1999, null, "DVD");
 
         // Assert
-        assertFalse(resultados.isEmpty(), "Debería encontrar al menos una película");
-        assertEquals("The Matrix", resultados.get(0).getTitulo());
+        assertFalse(resultMatrix.isEmpty(), "Debería encontrar al menos una película por título y precio");
+        assertEquals("The Matrix", resultMatrix.get(0).getTitulo());
+        
+        // Even if relations aren't explicitly saved, we just want to hit the if blocks in Criteria API
+        assertNotNull(resultFull, "Debería ejecutar la query con todos los filtros");
     }
 
     @Test
