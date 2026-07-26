@@ -62,6 +62,11 @@ public class PeliculaController {
         return ResponseEntity.ok().build();
     }
 
+    @GetMapping("/buscar")
+    public List<PeliculaDTO> buscarPeliculas(@RequestParam(required = false) String query) {
+        return peliculaService.buscarPeliculas(query);
+    }
+
     @GetMapping("/{id}")
     public PeliculaDTO obtenerDetallePelicula(@PathVariable Integer id) {
         return peliculaService.obtenerDetallePelicula(id);
