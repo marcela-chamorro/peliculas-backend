@@ -3,7 +3,7 @@ package com.unrn.peliculas.controller;
 import com.unrn.peliculas.dto.VentaPorPeliculaDTO;
 import com.unrn.peliculas.dto.PeliculaDTO;
 import com.unrn.peliculas.service.PeliculaService;
-import com.unrn.peliculas.service.externo.ClienteHistorial;
+import com.unrn.peliculas.service.port.HistorialVentasPort;
 import com.unrn.peliculas.dto.ActualizarStockDTO;
 import com.unrn.peliculas.dto.DescuentoStockRequestDTO;
 
@@ -22,7 +22,7 @@ public class PeliculaController {
     private PeliculaService peliculaService;
 
     @Autowired
-    private ClienteHistorial clienteHistorial;
+    private HistorialVentasPort historialVentasPort;
 
     @PostMapping
     public PeliculaDTO crear(@RequestBody PeliculaDTO dto) {
@@ -40,7 +40,7 @@ public class PeliculaController {
     public ResponseEntity<List<VentaPorPeliculaDTO>> probarHistorial() {
 
         return ResponseEntity.ok(
-                clienteHistorial.obtenerVentasPorPelicula());
+                historialVentasPort.obtenerVentasPorPelicula());
     }
 
     @PutMapping("/descontar-stock")

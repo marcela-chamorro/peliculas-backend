@@ -324,7 +324,7 @@ class PeliculaServiceTest {
 
     @Test
     void testBuscarPeliculas_QueryValid() {
-        when(peliculaRepo.findByFiltros("inception", "inception", "inception", "inception", null, null, null))
+        when(peliculaRepo.buscarPorTituloOGenero("Inception"))
                 .thenReturn(List.of(pelicula));
 
         List<PeliculaDTO> result = peliculaService.buscarPeliculas(" Inception ");

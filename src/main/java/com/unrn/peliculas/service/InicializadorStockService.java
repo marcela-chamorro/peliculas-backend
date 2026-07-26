@@ -3,8 +3,9 @@ package com.unrn.peliculas.service;
 import com.unrn.peliculas.domain.Pelicula;
 import com.unrn.peliculas.dto.VentaPorPeliculaDTO;
 import com.unrn.peliculas.repository.PeliculaRepository;
-import com.unrn.peliculas.service.externo.ClienteHistorial;
+import com.unrn.peliculas.service.port.HistorialVentasPort;
 import jakarta.annotation.PostConstruct;
+import org.springframework.beans.factory.annotation.Value;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -19,12 +20,15 @@ public class InicializadorStockService {
     private static final Logger log = LoggerFactory.getLogger(InicializadorStockService.class);
 
     private final PeliculaRepository peliculaRepository;
-    private final ClienteHistorial clienteHistorial;
+    private final HistorialVentasPort historialVentasPort;
+
+    @Value("${pelicula.stock-inicial:50}")
+    private Integer stockBaseInicial;
 
     public InicializadorStockService(PeliculaRepository peliculaRepository,
-                                     ClienteHistorial clienteHistorial) {
+                                     HistorialVentasPort historialVentasPort) {
         this.peliculaRepository = peliculaRepository;
-        this.clienteHistorial = clienteHistorial;
+        this.historialVentasPort = historialVentasPort;
     }
 
     @PostConstruct
@@ -33,7 +37,7 @@ public class InicializadorStockService {
         List<VentaPorPeliculaDTO> ventas;
 
         try {
-            ventas = clienteHistorial.obtenerVentasPorPelicula();
+            ventas = historialVentasPort.obtenerVentasPorPelicula();
         } catch (Exception e) {
             log.warn("No fue posible obtener el historial de ventas. Se omite la inicialización automática del stock.", e);
             return;
@@ -58,7 +62,7 @@ public class InicializadorStockService {
                                 0
                         );
 
-                Integer stockInicial = 50 - cantidadVendida;
+                Integer stockInicial = stockBaseInicial - cantidadVendida;
 
                 pelicula.setStock(stockInicial);
 

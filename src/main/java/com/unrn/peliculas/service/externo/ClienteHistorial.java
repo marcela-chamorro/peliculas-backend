@@ -1,6 +1,7 @@
 package com.unrn.peliculas.service.externo;
 
 import com.unrn.peliculas.dto.VentaPorPeliculaDTO;
+import com.unrn.peliculas.service.port.HistorialVentasPort;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpMethod;
@@ -11,7 +12,7 @@ import org.springframework.web.client.RestTemplate;
 import java.util.List;
 
 @Component
-public class ClienteHistorial {
+public class ClienteHistorial implements HistorialVentasPort {
 
     private final RestTemplate rest;
     private final String baseUrl;

@@ -3,7 +3,7 @@ package com.unrn.peliculas.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.unrn.peliculas.dto.PeliculaDTO;
 import com.unrn.peliculas.service.PeliculaService;
-import com.unrn.peliculas.service.externo.ClienteHistorial;
+import com.unrn.peliculas.service.port.HistorialVentasPort;
 
 import jakarta.servlet.ServletException;
 
@@ -60,7 +60,7 @@ class PeliculaControllerTest {
     private JwtDecoder jwtDecoder;
 
     @MockBean
-    private ClienteHistorial clienteHistorial;
+    private HistorialVentasPort historialVentasPort;
 
     @Autowired
     private ObjectMapper objectMapper;
