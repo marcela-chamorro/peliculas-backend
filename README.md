@@ -4,7 +4,7 @@ Este microservicio forma parte del sistema **El Almacén de Películas Online** 
 
 ---
 
-## 🎯 1. Propósito y Visión General
+## 1. Propósito y Visión General
 
 El microservicio `pelicula-backend` da cumplimiento a los requerimientos del sistema:
 - **RF-1 (Listado de catálogo)**: Permite visualizar el catálogo ordenado de más reciente a más antiguo, incluyendo detalles básicos.
@@ -20,7 +20,7 @@ El microservicio `pelicula-backend` da cumplimiento a los requerimientos del sis
 
 ---
 
-## 📡 2. Servicios Expuestos vía HTTP (API REST)
+## 2. Servicios Expuestos vía HTTP (API REST)
 
 Base URL: `http://localhost:8081/api/peliculas`
 
@@ -32,7 +32,7 @@ Base URL: `http://localhost:8081/api/peliculas`
 | `PUT` | `/api/peliculas/{id}` | (Admin) Modifica los datos de una película existente. | `200 OK` / `404 Not Found` |
 | `DELETE` | `/api/peliculas/{id}` | (Admin) Elimina (o da de baja) una película del catálogo. | `204 No Content` / `404 Not Found` |
 
-### 📝 Estructura de DTOs / Payloads
+### Estructura de DTOs / Payloads
 
 #### PeliculaDTO (`GET /api/peliculas/{id}`)
 ```json
@@ -54,7 +54,7 @@ Base URL: `http://localhost:8081/api/peliculas`
 
 ---
 
-## 🔄 3. Eventos Publicados y Consumidos
+## 3. Eventos Publicados y Consumidos
 
 ### Modelo de Integración por Mensajería (RabbitMQ)
 
@@ -84,7 +84,7 @@ Base URL: `http://localhost:8081/api/peliculas`
 
 ---
 
-## 🏗️ 4. Arquitectura y Diagramas C4
+## 4. Arquitectura y Diagramas C4
 
 ### Diagrama Nivel 1: Contexto del Sistema
 
@@ -118,7 +118,7 @@ C4Container
 
 ---
 
-## 🧪 5. Ejecución de Pruebas Automatizadas
+## 5. Ejecución de Pruebas Automatizadas
 
 El proyecto incluye pruebas automatizadas para garantizar la calidad del código, enfocadas especialmente en el ABM y el control estricto de concurrencia de stock.
 
@@ -129,11 +129,11 @@ Para ejecutar todas las pruebas automatizadas y verificar la cobertura:
 
 ---
 
-## 🚀 6. Despliegue y Ejecución Local (Guía de Volúmenes y Base de Datos)
+## 6. Despliegue y Ejecución Local (Guía de Volúmenes y Base de Datos)
 
 Este apartado describe el procedimiento recomendado para crear correctamente los volúmenes de Docker y desplegar la base de datos usando **Docker Compose**.
 
-### 📌 6.1. Verificar los volúmenes existentes
+### 6.1. Verificar los volúmenes existentes
 Antes de crear nuevos volúmenes, revisa los existentes:
 ```bash
 docker volume ls
@@ -147,13 +147,13 @@ O eliminar todos los volúmenes no utilizados:
 docker volume prune
 ```
 
-### 📌 6.2. Reconstruir las imágenes (si cambió el código o Dockerfile)
+### 6.2. Reconstruir las imágenes (si cambió el código o Dockerfile)
 Siempre que cambies el Dockerfile o el código del proyecto:
 ```bash
 docker compose build --no-cache
 ```
 
-### 📌 6.3. Levantar los servicios y crear automáticamente los volúmenes
+### 6.3. Levantar los servicios y crear automáticamente los volúmenes
 Cuando ejecutes:
 ```bash
 docker compose up -d
@@ -164,7 +164,7 @@ Para comprobarlos:
 docker volume ls
 ```
 
-### 📌 6.4. Ver contenido dentro del volumen (Opcional)
+### 6.4. Ver contenido dentro del volumen (Opcional)
 Puedes inspeccionar un volumen:
 ```bash
 docker volume inspect peliculas-data
@@ -174,7 +174,7 @@ O abrir un contenedor temporal para explorarlo:
 docker run -it --rm -v peliculas-data:/data alpine sh
 ```
 
-### 📌 6.5. Resetear completamente la base de datos
+### 6.5. Resetear completamente la base de datos
 Si quieres recrear la BD desde cero:
 1. Apagas los servicios:
    ```bash
@@ -191,7 +191,7 @@ Si quieres recrear la BD desde cero:
    ```
 La BD se creará completamente nueva.
 
-### 📌 6.6. Logs y validación
+### 6.6. Logs y validación
 Ver logs de la base de datos:
 ```bash
 docker logs peliculas-db
