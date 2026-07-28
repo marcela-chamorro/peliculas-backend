@@ -437,7 +437,7 @@ class PeliculaServiceTest {
             peliculaService.descontarStock(1, 20);
         });
 
-        assertTrue(ex.getReason().contains("Stock insuficiente"));
+        assertTrue(ex.getReason().contains("No hay stock suficiente"));
         verify(eventPublisher, never()).enviarEvento(any());
     }
 
@@ -497,6 +497,6 @@ class PeliculaServiceTest {
             peliculaService.descontarStock(request);
         });
 
-        assertTrue(ex.getReason().contains("Stock insuficiente"));
+        assertTrue(ex.getReason().contains("No hay stock suficiente"));
     }
 }

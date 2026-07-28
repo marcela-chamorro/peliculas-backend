@@ -40,5 +40,34 @@ public class RabbitMQConfig {
     public TopicExchange exchange() {
         return new TopicExchange(exchangeName);
     }
+
+    @Value("${rabbitmq.event.compra.exchange.name:compra.exchange}")
+    private String compraExchangeName;
+
+    @Value("${rabbitmq.event.compra.queue.name:peliculas.stock.queue}")
+    private String stockQueueName;
+
+    @Value("${rabbitmq.event.compra.routing.key:compra.event}")
+    private String compraRoutingKey;
+
+    @Bean
+    public TopicExchange compraExchange() {
+        return new TopicExchange(compraExchangeName);
+    }
+
+    @Bean
+    public org.springframework.amqp.core.Queue stockQueue() {
+        return new org.springframework.amqp.core.Queue(stockQueueName, true);
+    }
+
+    @Bean
+    public org.springframework.amqp.core.Binding stockBinding(
+            org.springframework.amqp.core.Queue stockQueue,
+            TopicExchange compraExchange) {
+        return org.springframework.amqp.core.BindingBuilder
+                .bind(stockQueue)
+                .to(compraExchange)
+                .with(compraRoutingKey);
+    }
 }
 

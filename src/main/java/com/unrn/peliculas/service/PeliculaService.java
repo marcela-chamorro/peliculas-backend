@@ -145,10 +145,9 @@ public class PeliculaService {
 
                 throw new ResponseStatusException(
                         HttpStatus.BAD_REQUEST,
-                        "Stock insuficiente para la película '"
+                        "No hay stock suficiente \""
                                 + pelicula.getTitulo()
-                                + "'. Stock disponible: "
-                                + pelicula.getStock());
+                                + "\" para la compra.");
             }
 
                         pelicula.setStock(
@@ -158,6 +157,14 @@ public class PeliculaService {
                 }
 
                 peliculaRepo.saveAll(peliculasActualizadas);
+
+                for (Pelicula p : peliculasActualizadas) {
+                        Event<Integer, PeliculaSimplificada> evento = new Event<>(
+                                        EventType.UPDATE,
+                                        p.getPeliculaId(),
+                                        toPeliculaSimplificada(p));
+                        eventPublisher.enviarEvento(evento);
+                }
         }
 
         public PeliculaDTO obtenerDetallePelicula(Integer id) {
@@ -304,8 +311,8 @@ public class PeliculaService {
                                         .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
                                                         "Película no encontrada"));
                         throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
-                                        "Stock insuficiente para la película '" + p.getTitulo()
-                                                        + "'. Stock disponible: " + p.getStock());
+                                        "No hay stock suficiente \"" + p.getTitulo()
+                                                        + "\" para la compra.");
                 }
 
                 Pelicula p = peliculaRepo.findByIdWithRelations(id)
